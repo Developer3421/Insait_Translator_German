@@ -2,11 +2,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:chrome="using:Insait_Translator_Deutsch.Views.Chrome"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
         x:Class="Insait_Translator_Deutsch.Views.LanguageSelectionWindow"
         Title="Language Selection"
         WindowStartupLocation="CenterOwner"
-        SystemDecorations="BorderOnly"
+        SystemDecorations="None"
         Width="500"
         Height="300"
         CanResize="False"
@@ -58,34 +59,43 @@
         <SolidColorBrush Color="{StaticResource AppBgColor}"/>
     </Window.Background>
 
-    <Border Background="{StaticResource AppSurfaceBrush}" CornerRadius="8" Margin="12" Padding="20">
-        <Grid RowDefinitions="Auto,Auto,*,Auto">
-            <!-- Title -->
-            <TextBlock Grid.Row="0" Name="TitleText" Text="Select Language" 
-                       FontSize="18" FontWeight="Bold" 
-                       Foreground="{StaticResource AccentPurpleBrush}"
-                       HorizontalAlignment="Center" Margin="0,0,0,8"/>
-            
-            <!-- Description -->
-            <TextBlock Grid.Row="1" Name="DescriptionText" Text="Select interface language:" 
-                       FontSize="13" 
-                       Foreground="{StaticResource AppTextBrush}"
-                       HorizontalAlignment="Center" Margin="0,0,0,16"/>
-            
-            <!-- Language ComboBox -->
-            <ComboBox Grid.Row="2" Name="LanguageComboBox" 
-                      HorizontalAlignment="Stretch" 
-                      VerticalAlignment="Top"
-                      FontSize="14"
-                      Height="40"
-                      Padding="12,0"/>
-            
-            <!-- Buttons -->
-            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" Margin="0,20,0,0">
-                <Button Classes="dialog-button" Name="ApplyButton" Content="Apply" Click="ApplyButton_Click"/>
-                <Button Classes="dialog-button secondary" Name="CancelButton" Content="Cancel" Click="CancelButton_Click"/>
-            </StackPanel>
-        </Grid>
-    </Border>
+    <Grid RowDefinitions="42,*">
+        <chrome:CustomTitleBar Grid.Row="0">
+            <chrome:CustomTitleBar.LeftContent>
+                <TextBlock Name="TitleBarText" Text="🌐 Мова" FontSize="14" FontWeight="SemiBold"
+                           Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+            </chrome:CustomTitleBar.LeftContent>
+        </chrome:CustomTitleBar>
+
+        <Border Grid.Row="1" Background="{StaticResource AppSurfaceBrush}" CornerRadius="8" Margin="12" Padding="20">
+            <Grid RowDefinitions="Auto,Auto,*,Auto">
+                <!-- Title -->
+                <TextBlock Grid.Row="0" Name="TitleText" Text="Вибір мови" 
+                           FontSize="18" FontWeight="Bold" 
+                           Foreground="{StaticResource AccentPurpleBrush}"
+                           HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                
+                <!-- Description -->
+                <TextBlock Grid.Row="1" Name="DescriptionText" Text="Виберіть мову інтерфейсу:" 
+                           FontSize="13" 
+                           Foreground="{StaticResource AppTextBrush}"
+                           HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                
+                <!-- Language ComboBox -->
+                <ComboBox Grid.Row="2" Name="LanguageComboBox" 
+                          HorizontalAlignment="Stretch" 
+                          VerticalAlignment="Top"
+                          FontSize="14"
+                          Height="40"
+                          Padding="12,0"/>
+                
+                <!-- Buttons -->
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" Margin="0,20,0,0">
+                    <Button Classes="dialog-button" Name="ApplyButton" Content="Застосувати" Click="ApplyButton_Click"/>
+                    <Button Classes="dialog-button secondary" Name="CancelButton" Content="Скасувати" Click="CancelButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
 </Window>
 

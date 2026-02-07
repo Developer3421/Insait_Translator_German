@@ -24,8 +24,9 @@ public sealed class NativeBackendHost : IAsyncDisposable
     private readonly HttpClient? _proxyClient;
     private CancellationTokenSource? _cts;
     private Task? _loop;
+    private bool _ttsInitialized;
 
-    public Uri BaseAddress { get; }
+    public Uri BaseAddress { get; private set; }
 
     public NativeBackendHost(string urlPrefix = "http://127.0.0.1:5050/", string? uiProxyBaseUrl = null)
     {
@@ -49,31 +50,36 @@ public sealed class NativeBackendHost : IAsyncDisposable
     public void Start()
     {
         _cts = new CancellationTokenSource();
-        
+
+        string startedPrefix;
         try
         {
             _listener.Start();
+            startedPrefix = BaseAddress.ToString();
         }
         catch (HttpListenerException ex)
         {
             // Якщо 127.0.0.1 не працює, спробуємо localhost
             System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Failed to start on {BaseAddress}: {ex.Message}");
             Console.WriteLine($"[NativeBackendHost] Failed to start on {BaseAddress}: {ex.Message}");
-            
+
             // Спробуємо альтернативний URL
             var altUrl = BaseAddress.ToString().Replace("127.0.0.1", "localhost");
             System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Trying alternative: {altUrl}");
-            
+
             _listener.Prefixes.Clear();
             _listener.Prefixes.Add(altUrl);
             _listener.Start();
+
+            BaseAddress = new Uri(altUrl);
+            startedPrefix = altUrl;
         }
-        
+
         _loop = Task.Run(() => AcceptLoopAsync(_cts.Token));
-        
-        System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Started on {BaseAddress}");
-        Console.WriteLine($"[NativeBackendHost] Started on {BaseAddress}");
-        
+
+        System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Started on {startedPrefix}");
+        Console.WriteLine($"[NativeBackendHost] Started on {startedPrefix}");
+
         // Log embedded resources for debugging
         var assembly = Assembly.GetExecutingAssembly();
         var resources = assembly.GetManifestResourceNames();
@@ -132,44 +138,82 @@ public sealed class NativeBackendHost : IAsyncDisposable
 
             if (ctx.Request.HttpMethod == "POST" && path == "/api/translate")
             {
-                var body = await JsonSerializer.DeserializeAsync<TranslateRequest>(ctx.Request.InputStream, new JsonSerializerOptions
+                try
                 {
-                    PropertyNameCaseInsensitive = true
-                }).ConfigureAwait(false);
+                    var body = await JsonSerializer.DeserializeAsync<TranslateRequest>(ctx.Request.InputStream, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }).ConfigureAwait(false);
 
-                var text = body?.Text ?? string.Empty;
-                var source = body?.SourceLang ?? "uk";
-                var target = body?.TargetLang ?? "de";
+                    var text = body?.Text ?? string.Empty;
+                    var source = body?.SourceLang ?? "uk";
+                    var target = body?.TargetLang ?? "de";
 
-                var translation = await _translation.TranslateAsync(text, source, target).ConfigureAwait(false);
-                await WriteJsonAsync(ctx, new { translation }).ConfigureAwait(false);
+                    System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Translating: '{text.Substring(0, Math.Min(50, text.Length))}...' from {source} to {target}");
+                    
+                    var translation = await _translation.TranslateAsync(text, source, target).ConfigureAwait(false);
+                    
+                    System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Translation successful: '{translation.Substring(0, Math.Min(50, translation.Length))}...'");
+                    
+                    await WriteJsonAsync(ctx, new { translation }).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Translation error: {ex}");
+                    Console.WriteLine($"[NativeBackendHost] Translation error: {ex}");
+                    ctx.Response.StatusCode = 500;
+                    await WriteJsonAsync(ctx, new { error = ex.Message, details = ex.ToString() }).ConfigureAwait(false);
+                }
                 return;
             }
 
             if (ctx.Request.HttpMethod == "POST" && path == "/api/speak-mp3")
             {
-                var body = await JsonSerializer.DeserializeAsync<SpeakRequest>(ctx.Request.InputStream, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }).ConfigureAwait(false);
-
-                var text = body?.Text ?? string.Empty;
-
-                // Create temp mp3 and return bytes
-                var tempMp3 = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"insait_tts_{Guid.NewGuid()}.mp3");
                 try
                 {
-                    await _tts.SaveToMp3Async(text, tempMp3).ConfigureAwait(false);
-                    var bytes = await System.IO.File.ReadAllBytesAsync(tempMp3).ConfigureAwait(false);
+                    var body = await JsonSerializer.DeserializeAsync<SpeakRequest>(ctx.Request.InputStream, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }).ConfigureAwait(false);
 
-                    ctx.Response.ContentType = "audio/mpeg";
-                    ctx.Response.ContentLength64 = bytes.Length;
-                    await ctx.Response.OutputStream.WriteAsync(bytes, 0, bytes.Length).ConfigureAwait(false);
-                    ctx.Response.Close();
+                    var text = body?.Text ?? string.Empty;
+
+                    System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] TTS request for text: '{text.Substring(0, Math.Min(50, text.Length))}...'");
+
+                    // Initialize TTS on first use
+                    if (!_ttsInitialized)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[NativeBackendHost] Initializing TTS...");
+                        await _tts.InitializeAsync(status => System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] TTS: {status}")).ConfigureAwait(false);
+                        _ttsInitialized = true;
+                        System.Diagnostics.Debug.WriteLine("[NativeBackendHost] TTS initialized successfully");
+                    }
+
+                    // Create temp mp3 and return bytes - use AppDataPaths for Microsoft Store compatibility
+                    var tempMp3 = AppDataPaths.GetTempFilePath(".mp3");
+                    try
+                    {
+                        await _tts.SaveToMp3Async(text, tempMp3).ConfigureAwait(false);
+                        var bytes = await System.IO.File.ReadAllBytesAsync(tempMp3).ConfigureAwait(false);
+
+                        System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] TTS generated {bytes.Length} bytes");
+
+                        ctx.Response.ContentType = "audio/mpeg";
+                        ctx.Response.ContentLength64 = bytes.Length;
+                        await ctx.Response.OutputStream.WriteAsync(bytes, 0, bytes.Length).ConfigureAwait(false);
+                        ctx.Response.Close();
+                    }
+                    finally
+                    {
+                        try { if (System.IO.File.Exists(tempMp3)) System.IO.File.Delete(tempMp3); } catch { }
+                    }
                 }
-                finally
+                catch (Exception ex)
                 {
-                    try { if (System.IO.File.Exists(tempMp3)) System.IO.File.Delete(tempMp3); } catch { }
+                    System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] TTS error: {ex}");
+                    Console.WriteLine($"[NativeBackendHost] TTS error: {ex}");
+                    ctx.Response.StatusCode = 500;
+                    await WriteJsonAsync(ctx, new { error = ex.Message, details = ex.ToString() }).ConfigureAwait(false);
                 }
 
                 return;

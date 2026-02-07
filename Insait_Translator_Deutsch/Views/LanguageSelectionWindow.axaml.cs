@@ -41,6 +41,11 @@ public partial class LanguageSelectionWindow : Window
         var strings = LocalizationManager.Instance.Strings;
         
         Title = strings.SelectLanguageTitle;
+        
+        // Title bar
+        if (this.FindControl<TextBlock>("TitleBarText") is TextBlock titleBarText)
+            titleBarText.Text = $"🌐 {strings.Language}";
+        
         TitleText.Text = strings.SelectLanguageTitle;
         DescriptionText.Text = strings.SelectLanguageDescription;
         ApplyButton.Content = strings.Apply;

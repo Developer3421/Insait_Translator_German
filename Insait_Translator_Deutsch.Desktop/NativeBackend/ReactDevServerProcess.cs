@@ -12,11 +12,13 @@ internal sealed class ReactDevServerProcess : IAsyncDisposable
     private readonly string _workingDirectory;
     private Process? _process;
     private readonly int _port;
+    private readonly string _backendUrl;
 
-    public ReactDevServerProcess(string workingDirectory, int port = 4200)
+    public ReactDevServerProcess(string workingDirectory, int port = 4200, string backendUrl = "http://localhost:4200")
     {
         _workingDirectory = workingDirectory;
         _port = port;
+        _backendUrl = backendUrl;
     }
 
     public bool IsRunning => _process is { HasExited: false };
@@ -53,6 +55,7 @@ internal sealed class ReactDevServerProcess : IAsyncDisposable
         // Set environment variables for Vite
         psi.Environment["INSAIT_UI_PORT"] = _port.ToString();
         psi.Environment["INSAIT_UI_HOST"] = "127.0.0.1";
+        psi.Environment["INSAIT_BACKEND_URL"] = _backendUrl;
 
         _process = new Process { StartInfo = psi, EnableRaisingEvents = true };
 

@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:chrome="using:Insait_Translator_Deutsch.Views.Chrome"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
         x:Class="Insait_Translator_Deutsch.Views.AboutWindow"
         Title="Про додаток"
@@ -91,21 +92,14 @@
     </Window.Background>
 
     <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="8">
-        <Grid RowDefinitions="36,*">
+        <Grid RowDefinitions="42,*">
 
-            <!-- Title Bar -->
-            <Grid Grid.Row="0" Name="TitleBar" Background="{StaticResource GrayGradient}">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="ℹ️ Про додаток" 
-                               FontSize="14" FontWeight="SemiBold" 
-                               Foreground="{StaticResource AppTextBrush}"
-                               VerticalAlignment="Center" Margin="12,0"/>
-                    <Button Grid.Column="1" Classes="close-button" Padding="0" Click="CloseButton_Click">
-                        <PathIcon Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" 
-                                  Width="12" Height="12" Foreground="#303030"/>
-                    </Button>
-                </Grid>
-            </Grid>
+            <chrome:CustomTitleBar Grid.Row="0">
+                <chrome:CustomTitleBar.LeftContent>
+                    <TextBlock Name="TitleBarText" Text="ℹ️ Про додаток" FontSize="14" FontWeight="SemiBold"
+                               Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                </chrome:CustomTitleBar.LeftContent>
+            </chrome:CustomTitleBar>
 
             <!-- Content -->
             <Border Grid.Row="1" Background="{StaticResource AppSurfaceBrush}" Padding="24">
@@ -113,57 +107,52 @@
                     
                     <!-- App Icon and Name -->
                     <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,20">
-                        <!-- German flag icon -->
-                        <Border Width="80" Height="50" CornerRadius="8" ClipToBounds="True" 
-                                HorizontalAlignment="Center" Margin="0,0,0,16"
-                                BorderThickness="2" BorderBrush="{StaticResource AccentPurpleBrush}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <Rectangle Grid.Row="0" Fill="{StaticResource GermanyBlackBrush}"/>
-                                <Rectangle Grid.Row="1" Fill="{StaticResource GermanyRedBrush}"/>
-                                <Rectangle Grid.Row="2" Fill="{StaticResource GermanyYellowBrush}"/>
-                            </Grid>
-                        </Border>
+                        <!-- App Icon -->
+                        <Image Source="/Assets/AppIcon1.png" Width="80" Height="80" 
+                               HorizontalAlignment="Center" Margin="0,0,0,16"/>
                         
-                        <TextBlock Text="🌍 Insait Перекладач → Deutsch" 
+                        <TextBlock Name="AppNameText" Text="🌍 Insait Перекладач → Deutsch" 
                                    FontSize="24" FontWeight="Bold" 
                                    Foreground="{StaticResource AccentPurpleBrush}"
                                    HorizontalAlignment="Center"/>
                         
-                        <TextBlock Text="Версія 1.0.0" 
+                        <TextBlock Name="VersionText" Text="Версія 1.0.0" 
                                    FontSize="14" Foreground="{StaticResource AppTextMutedBrush}"
                                    HorizontalAlignment="Center" Margin="0,4,0,0"/>
                     </StackPanel>
 
                     <!-- Description -->
                     <Border Grid.Row="1" Background="#20000000" CornerRadius="8" Padding="16" Margin="0,0,0,16">
-                        <TextBlock TextWrapping="Wrap" FontSize="13" LineHeight="22"
-                                   Foreground="{StaticResource AppTextBrush}">
-                            <Run FontWeight="SemiBold">Універсальний Перекладач на Deutsch</Run>
-                            <LineBreak/>
-                            <LineBreak/>
-                            Цей додаток дозволяє легко перекладати тексти з будь-якої мови на німецьку та озвучувати переклад.
-                            <LineBreak/>
-                            <LineBreak/>
-                            <Run FontWeight="SemiBold">Основні можливості:</Run>
-                            <LineBreak/>
-                            • Переклад тексту з будь-якої мови на німецьку
-                            <LineBreak/>
-                            • Озвучення перекладу (Text-to-Speech)
-                            <LineBreak/>
-                            • Збереження перекладу як текст або MP3
-                            <LineBreak/>
-                            • Робота з файлами та буфером обміну
-                        </TextBlock>
+                        <StackPanel>
+                            <TextBlock Name="DescriptionTitleText" Text="Універсальний Перекладач на Deutsch"
+                                       FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap" LineHeight="22"
+                                       Foreground="{StaticResource AppTextBrush}"/>
+                            <TextBlock Text="" Height="8"/>
+                            <TextBlock Name="DescriptionText" Text="Цей додаток дозволяє легко перекладати тексти з будь-якої мови на німецьку та озвучувати переклад."
+                                       FontSize="13" TextWrapping="Wrap" LineHeight="22"
+                                       Foreground="{StaticResource AppTextBrush}"/>
+                            <TextBlock Text="" Height="8"/>
+                            <TextBlock Name="FeaturesTitleText" Text="Основні можливості:"
+                                       FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap" LineHeight="22"
+                                       Foreground="{StaticResource AppTextBrush}"/>
+                            <TextBlock Name="Feature1Text" Text="• Переклад тексту з будь-якої мови на німецьку"
+                                       FontSize="13" TextWrapping="Wrap" LineHeight="22"
+                                       Foreground="{StaticResource AppTextBrush}"/>
+                            <TextBlock Name="Feature2Text" Text="• Озвучення перекладу (Text-to-Speech)"
+                                       FontSize="13" TextWrapping="Wrap" LineHeight="22"
+                                       Foreground="{StaticResource AppTextBrush}"/>
+                            <TextBlock Name="Feature3Text" Text="• Збереження перекладу як текст або MP3"
+                                       FontSize="13" TextWrapping="Wrap" LineHeight="22"
+                                       Foreground="{StaticResource AppTextBrush}"/>
+                            <TextBlock Name="Feature4Text" Text="• Робота з файлами та буфером обміну"
+                                       FontSize="13" TextWrapping="Wrap" LineHeight="22"
+                                       Foreground="{StaticResource AppTextBrush}"/>
+                        </StackPanel>
                     </Border>
 
                     <!-- Technologies -->
                     <StackPanel Grid.Row="2" Margin="0,0,0,16">
-                        <TextBlock Text="Технології:" FontWeight="SemiBold" FontSize="13"
+                        <TextBlock Name="TechnologiesText" Text="Технології:" FontWeight="SemiBold" FontSize="13"
                                    Foreground="{StaticResource AppTextBrush}" Margin="0,0,0,8"/>
                         <WrapPanel>
                             <Border Background="{StaticResource AccentOrangeBrush}" CornerRadius="12" 
@@ -178,7 +167,7 @@
                             </Border>
                             <Border Background="{StaticResource AccentOrangeBrush}" CornerRadius="12" 
                                     Padding="10,4" Margin="0,0,8,8">
-                                <TextBlock Text="Azure AI" FontSize="11" FontWeight="SemiBold"
+                                <TextBlock Text="Google Gemini" FontSize="11" FontWeight="SemiBold"
                                            Foreground="{StaticResource AccentPurpleBrush}"/>
                             </Border>
                             <Border Background="{StaticResource AccentOrangeBrush}" CornerRadius="12" 
@@ -188,7 +177,7 @@
                             </Border>
                         </WrapPanel>
 
-                        <TextBlock Text="© 2026 Insait. Всі права захищено." 
+                        <TextBlock Name="CopyrightText" Text="© 2026 Insait. Всі права захищено." 
                                    FontSize="11" Foreground="{StaticResource AppTextMutedBrush}"
                                    HorizontalAlignment="Center" Margin="0,16,0,0"/>
                     </StackPanel>

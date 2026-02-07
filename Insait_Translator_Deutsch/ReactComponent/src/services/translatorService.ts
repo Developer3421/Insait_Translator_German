@@ -39,6 +39,8 @@ export async function translate(
   sourceLang = 'uk',
   targetLang = 'de'
 ): Promise<string> {
+  console.log('[TranslatorService] Sending translate request...');
+  
   const response = await fetch(`${baseUrl}/api/translate`, {
     method: 'POST',
     headers: {
@@ -51,11 +53,22 @@ export async function translate(
     }),
   });
 
+  console.log('[TranslatorService] Translate response status:', response.status);
+
   if (!response.ok) {
-    throw new Error(`Translation failed: ${response.statusText}`);
+    let errorDetails = response.statusText;
+    try {
+      const errorJson = await response.json();
+      console.error('[TranslatorService] Translation error details:', errorJson);
+      errorDetails = errorJson.error || errorJson.details || errorDetails;
+    } catch {
+      // Ignore JSON parse errors
+    }
+    throw new Error(`Translation failed: ${errorDetails}`);
   }
 
   const data: TranslateResponse = await response.json();
+  console.log('[TranslatorService] Translation successful');
   return data.translation;
 }
 
@@ -63,6 +76,8 @@ export async function translate(
  * Get MP3 audio for text-to-speech
  */
 export async function speakMp3(text: string): Promise<Blob> {
+  console.log('[TranslatorService] Sending TTS request...');
+  
   const response = await fetch(`${baseUrl}/api/speak-mp3`, {
     method: 'POST',
     headers: {
@@ -73,10 +88,21 @@ export async function speakMp3(text: string): Promise<Blob> {
     }),
   });
 
+  console.log('[TranslatorService] TTS response status:', response.status);
+
   if (!response.ok) {
-    throw new Error(`TTS failed: ${response.statusText}`);
+    let errorDetails = response.statusText;
+    try {
+      const errorJson = await response.json();
+      console.error('[TranslatorService] TTS error details:', errorJson);
+      errorDetails = errorJson.error || errorJson.details || errorDetails;
+    } catch {
+      // Ignore JSON parse errors
+    }
+    throw new Error(`TTS failed: ${errorDetails}`);
   }
 
+  console.log('[TranslatorService] TTS successful');
   return response.blob();
 }
 

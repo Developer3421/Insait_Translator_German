@@ -3,7 +3,7 @@ import { checkHealth, translate, speakMp3 } from './services/translatorService';
 import './App.css';
 
 // ===== LOCALIZATION SYSTEM =====
-type UILanguage = 'uk' | 'en' | 'de';
+type UILanguage = 'uk' | 'en' | 'de' | 'ru' | 'tr';
 
 interface LocalizedStrings {
   // Header
@@ -151,7 +151,7 @@ const translations: Record<UILanguage, LocalizedStrings> = {
     reconnect: 'Neu verbinden',
     interfaceLanguage: 'Sprache',
     
-    mainTitle: 'Übersetzung ins Deutsche',
+    mainTitle: 'Übersetzung in Deutsch',
     sourceLanguage: 'Ausgangssprache:',
     sourcePlaceholder: 'Text zum Übersetzen eingeben...',
     translationPlaceholder: 'Die deutsche Übersetzung wird hier angezeigt...',
@@ -185,46 +185,102 @@ const translations: Record<UILanguage, LocalizedStrings> = {
     translateShortcut: 'Übersetzen',
     error: 'Fehler',
   },
+  ru: {
+    appTitle: 'Insait Переводчик → Deutsch',
+    connected: '● Подключено',
+    disconnected: '○ Отключено',
+    
+    clear: 'Очистить',
+    reconnect: 'Переподключить',
+    interfaceLanguage: '🌐 Язык',
+    
+    mainTitle: 'Перевод на немецкий',
+    sourceLanguage: 'Язык текста:',
+    sourcePlaceholder: 'Введите текст для перевода...',
+    translationPlaceholder: 'Перевод на немецкий появится здесь...',
+    
+    paste: 'Вставить из буфера',
+    listen: 'Прослушать',
+    copy: 'Копировать',
+    downloadMp3: 'Скачать MP3',
+    translate: 'Перевести',
+    
+    ready: 'Готово',
+    backendConnected: 'Бэкенд подключен ✓',
+    backendUnavailable: '⚠️ Бэкенд недоступен - запустите нативное приложение',
+    translating: 'Перевод...',
+    translated: 'Переведено ✓',
+    enterTextToTranslate: 'Введите текст для перевода',
+    noTextToSpeak: 'Нет текста для озвучивания',
+    generatingAudio: 'Генерация аудио...',
+    playing: 'Воспроизведение...',
+    noTextToCopy: 'Нет текста для копирования',
+    copiedToClipboard: 'Скопировано в буфер обмена ✓',
+    copyError: 'Ошибка копирования',
+    pastedFromClipboard: 'Вставлено из буфера обмена ✓',
+    pasteError: 'Ошибка вставки',
+    noTextToSave: 'Нет текста для сохранения',
+    generatingMp3: 'Генерация MP3...',
+    mp3Downloaded: 'MP3 скачан ✓',
+    cleared: 'Очищено',
+    
+    characters: 'символов',
+    translateShortcut: 'Перевести',
+    error: 'Ошибка',
+  },
+  tr: {
+    appTitle: 'Insait Çevirmen → Deutsch',
+    connected: '● Bağlı',
+    disconnected: '○ Bağlantı kesildi',
+    
+    clear: 'Temizle',
+    reconnect: 'Yeniden bağlan',
+    interfaceLanguage: '🌐 Dil',
+    
+    mainTitle: 'Almancaya çeviri',
+    sourceLanguage: 'Kaynak dil:',
+    sourcePlaceholder: 'Çevrilecek metni girin...',
+    translationPlaceholder: 'Almanca çeviri burada görünecek...',
+    
+    paste: 'Panodan yapıştır',
+    listen: 'Dinle',
+    copy: 'Kopyala',
+    downloadMp3: 'MP3 indir',
+    translate: 'Çevir',
+    
+    ready: 'Hazır',
+    backendConnected: 'Backend bağlı ✓',
+    backendUnavailable: '⚠️ Backend kullanılamıyor - yerel uygulamayı çalıştırın',
+    translating: 'Çevriliyor...',
+    translated: 'Çevrildi ✓',
+    enterTextToTranslate: 'Çevrilecek metni girin',
+    noTextToSpeak: 'Seslendirilecek metin yok',
+    generatingAudio: 'Ses oluşturuluyor...',
+    playing: 'Oynatılıyor...',
+    noTextToCopy: 'Kopyalanacak metin yok',
+    copiedToClipboard: 'Panoya kopyalandı ✓',
+    copyError: 'Kopyalama hatası',
+    pastedFromClipboard: 'Panodan yapıştırıldı ✓',
+    pasteError: 'Yapıştırma hatası',
+    noTextToSave: 'Kaydedilecek metin yok',
+    generatingMp3: 'MP3 oluşturuluyor...',
+    mp3Downloaded: 'MP3 indirildi ✓',
+    cleared: 'Temizlendi',
+    
+    characters: 'karakter',
+    translateShortcut: 'Çevir',
+    error: 'Hata',
+  },
 };
 
-// ===== SOURCE LANGUAGES (translate FROM) =====
-interface SourceLanguage {
-  code: string;
-  name: Record<UILanguage, string>;
-}
-
-const sourceLanguages: SourceLanguage[] = [
-  { code: 'uk', name: { uk: 'Українська', en: 'Ukrainian', de: 'Ukrainisch' } },
-  { code: 'en', name: { uk: 'Англійська', en: 'English', de: 'Englisch' } },
-  { code: 'fr', name: { uk: 'Французька', en: 'French', de: 'Französisch' } },
-  { code: 'es', name: { uk: 'Іспанська', en: 'Spanish', de: 'Spanisch' } },
-  { code: 'it', name: { uk: 'Італійська', en: 'Italian', de: 'Italienisch' } },
-  { code: 'pt', name: { uk: 'Португальська', en: 'Portuguese', de: 'Portugiesisch' } },
-  { code: 'pl', name: { uk: 'Польська', en: 'Polish', de: 'Polnisch' } },
-  { code: 'nl', name: { uk: 'Нідерландська', en: 'Dutch', de: 'Niederländisch' } },
-  { code: 'ru', name: { uk: 'Російська', en: 'Russian', de: 'Russisch' } },
-  { code: 'cs', name: { uk: 'Чеська', en: 'Czech', de: 'Tschechisch' } },
-  { code: 'sk', name: { uk: 'Словацька', en: 'Slovak', de: 'Slowakisch' } },
-  { code: 'hu', name: { uk: 'Угорська', en: 'Hungarian', de: 'Ungarisch' } },
-  { code: 'ro', name: { uk: 'Румунська', en: 'Romanian', de: 'Rumänisch' } },
-  { code: 'bg', name: { uk: 'Болгарська', en: 'Bulgarian', de: 'Bulgarisch' } },
-  { code: 'hr', name: { uk: 'Хорватська', en: 'Croatian', de: 'Kroatisch' } },
-  { code: 'sv', name: { uk: 'Шведська', en: 'Swedish', de: 'Schwedisch' } },
-  { code: 'da', name: { uk: 'Данська', en: 'Danish', de: 'Dänisch' } },
-  { code: 'fi', name: { uk: 'Фінська', en: 'Finnish', de: 'Finnisch' } },
-  { code: 'el', name: { uk: 'Грецька', en: 'Greek', de: 'Griechisch' } },
-  { code: 'tr', name: { uk: 'Турецька', en: 'Turkish', de: 'Türkisch' } },
-  { code: 'ja', name: { uk: 'Японська', en: 'Japanese', de: 'Japanisch' } },
-  { code: 'ko', name: { uk: 'Корейська', en: 'Korean', de: 'Koreanisch' } },
-  { code: 'zh', name: { uk: 'Китайська', en: 'Chinese', de: 'Chinesisch' } },
-  { code: 'ar', name: { uk: 'Арабська', en: 'Arabic', de: 'Arabisch' } },
-];
 
 // UI Languages for selection
 const uiLanguages: { code: UILanguage; name: string }[] = [
   { code: 'uk', name: 'Українська' },
   { code: 'en', name: 'English' },
   { code: 'de', name: 'Deutsch' },
+  { code: 'ru', name: 'Русский' },
+  { code: 'tr', name: 'Türkçe' },
 ];
 
 function App() {
@@ -234,7 +290,6 @@ function App() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isBackendAvailable, setIsBackendAvailable] = useState(false);
-  const [sourceLanguage, setSourceLanguage] = useState('uk');
   const [uiLanguage, setUILanguage] = useState<UILanguage>('uk');
   const [showUILanguageMenu, setShowUILanguageMenu] = useState(false);
 
@@ -250,8 +305,6 @@ function App() {
   const germanCharCount = germanText.length;
   const canTranslate = sourceText.trim().length > 0 && !isTranslating;
 
-  // Get current source language info
-  const currentSourceLang = sourceLanguages.find(l => l.code === sourceLanguage) || sourceLanguages[0];
 
   const stopAudio = useCallback(() => {
     if (audioSourceRef.current) {
@@ -285,6 +338,11 @@ function App() {
   useEffect(() => {
     setStatusText(t.ready);
   }, [t.ready]);
+
+  // Update document title based on UI language
+  useEffect(() => {
+    document.title = t.appTitle;
+  }, [t.appTitle]);
 
   // Close UI language menu when clicking outside
   useEffect(() => {
@@ -330,7 +388,7 @@ function App() {
     setStatusText(t.translating);
 
     try {
-      const translation = await translate(text, sourceLanguage, 'de');
+      const translation = await translate(text, 'auto', 'de');
       setGermanText(translation);
       setStatusText(t.translated);
     } catch (err) {
@@ -510,19 +568,6 @@ function App() {
       <div className="translation-area">
         {/* Source Input */}
         <div className="panel input-panel">
-          <div className="panel-header">
-            <select 
-              className="language-select"
-              value={sourceLanguage}
-              onChange={(e) => setSourceLanguage(e.target.value)}
-            >
-              {sourceLanguages.map(lang => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.name[uiLanguage]}
-                </option>
-              ))}
-            </select>
-          </div>
           <textarea
             className="text-area"
             value={sourceText}
@@ -594,8 +639,7 @@ function App() {
       {/* Status Bar */}
       <footer className="status-bar">
         <div className="char-counts">
-          <span className="char-count">{currentSourceLang.name[uiLanguage]}: {sourceCharCount} {t.characters}</span>
-          <span className="char-count">Deutsch: {germanCharCount} {t.characters}</span>
+          <span className="char-count">{sourceCharCount} / {germanCharCount} {t.characters}</span>
         </div>
         <div className="shortcuts">
           <span className="shortcut"><kbd>Ctrl+Enter</kbd> {t.translateShortcut}</span>

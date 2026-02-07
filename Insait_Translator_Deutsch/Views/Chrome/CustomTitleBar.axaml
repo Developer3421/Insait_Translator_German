@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Insait_Translator_Deutsch.Views.Chrome.CustomTitleBar"
+             x:Name="Root">
+
+    <UserControl.Styles>
+        <Style Selector="Button.window-control">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#303030"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.window-control:pointerover">
+            <Setter Property="Background" Value="#40FFFFFF"/>
+        </Style>
+        <Style Selector="Button.window-control.close:pointerover">
+            <Setter Property="Background" Value="#40FF5C5C"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid Height="42" Background="{DynamicResource GrayGradient}">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+            <!-- Left: content (title, logo, tabs...) provided by parent -->
+            <ContentPresenter Grid.Column="0"
+                              VerticalAlignment="Center"
+                              Margin="8,0,0,0"
+                              Content="{Binding LeftContent, ElementName=Root}"/>
+
+            <!-- Middle: draggable area -->
+            <Panel Grid.Column="1" Name="DragArea" Background="Transparent"/>
+
+            <!-- Right: window controls -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Name="MinimizeButton" Classes="window-control" Padding="0" Click="MinimizeButton_Click">
+                    <Image Source="/MinButton.png" Width="24" Height="24"/>
+                </Button>
+                <Button Name="MaximizeButton" Classes="window-control" Padding="0" Click="MaximizeButton_Click">
+                    <Image Source="/MaxButton.png" Width="24" Height="24"/>
+                </Button>
+                <Button Name="CloseButton" Classes="window-control close" Padding="0" Click="CloseButton_Click">
+                    <Image Source="/CloseButton.png" Width="24" Height="24"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
+

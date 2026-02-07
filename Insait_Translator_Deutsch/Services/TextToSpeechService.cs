@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Insait_Translator_Deutsch.Localization;
 
 #if !BROWSER
 using NAudio.Lame;
@@ -23,19 +24,19 @@ public class TextToSpeechService : IDisposable
 
     public Task InitializeAsync(Action<string>? statusCallback = null)
     {
-        statusCallback?.Invoke("TTS доступний лише в нативному додатку");
+        statusCallback?.Invoke(LocalizationManager.Instance.Strings.TtsAvailableOnlyInNative);
         return Task.CompletedTask;
     }
 
     public Task SpeakAsync(string text, Action<string>? statusCallback = null)
     {
-        statusCallback?.Invoke("TTS доступний лише в нативному додатку");
+        statusCallback?.Invoke(LocalizationManager.Instance.Strings.TtsAvailableOnlyInNative);
         return Task.CompletedTask;
     }
 
     public Task SaveToMp3Async(string text, string filePath, Action<string>? statusCallback = null)
     {
-        statusCallback?.Invoke("MP3 генерується в нативному додатку");
+        statusCallback?.Invoke(LocalizationManager.Instance.Strings.Mp3GeneratedInNative);
         return Task.CompletedTask;
     }
 
@@ -47,10 +48,6 @@ public class TextToSpeechService : IDisposable
 public class TextToSpeechService : IDisposable
 {
     private bool _isInitialized;
-    private readonly string _basePath;
-    private readonly string _piperExePath;
-    private readonly string _modelPath;
-    private readonly string _modelConfigPath;
     private bool _disposed;
     private static readonly HttpClient _httpClient = new() { Timeout = TimeSpan.FromMinutes(15) };
 
@@ -65,19 +62,8 @@ public class TextToSpeechService : IDisposable
 
     public TextToSpeechService()
     {
-        _basePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "InsaitTranslator");
-        
-        var piperDir = Path.Combine(_basePath, "piper");
-        _piperExePath = Path.Combine(piperDir, "piper", "piper.exe");
-        
-        var modelsDir = Path.Combine(_basePath, "models");
-        _modelPath = Path.Combine(modelsDir, "de_DE-thorsten-high.onnx");
-        _modelConfigPath = Path.Combine(modelsDir, "de_DE-thorsten-high.onnx.json");
-        
-        Directory.CreateDirectory(piperDir);
-        Directory.CreateDirectory(modelsDir);
+        // All paths are managed by AppDataPaths for Microsoft Store compatibility
+        // Directories are created lazily when accessed
     }
 
     public async Task InitializeAsync(Action<string>? statusCallback = null)
@@ -87,18 +73,20 @@ public class TextToSpeechService : IDisposable
 
         try
         {
+            var strings = LocalizationManager.Instance.Strings;
+            
             // Check if Windows
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                throw new PlatformNotSupportedException("Piper TTS наразі підтримується лише на Windows");
+                throw new PlatformNotSupportedException(strings.TtsPlatformNotSupported);
             }
 
             // Download Piper executable if not exists
-            if (!File.Exists(_piperExePath))
+            if (!File.Exists(AppDataPaths.PiperExePath))
             {
-                statusCallback?.Invoke("Завантаження Piper TTS (~15 MB)...");
+                statusCallback?.Invoke(strings.TtsDownloadingPiper);
                 
-                var zipPath = Path.Combine(_basePath, "piper.zip");
+                var zipPath = Path.Combine(AppDataPaths.PiperDirectory, "piper.zip");
                 
                 using var response = await _httpClient.GetAsync(PIPER_WINDOWS_URL, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
@@ -120,25 +108,25 @@ public class TextToSpeechService : IDisposable
                         if (totalBytes > 0)
                         {
                             var progress = (int)(totalRead * 100 / totalBytes);
-                            statusCallback?.Invoke($"Завантаження Piper TTS... {progress}%");
+                            statusCallback?.Invoke(string.Format(strings.TtsDownloadingPiperProgress, progress));
                         }
                     }
                 }
 
-                statusCallback?.Invoke("Розпаковка Piper...");
-                var extractPath = Path.Combine(_basePath, "piper");
-                if (Directory.Exists(extractPath))
+                statusCallback?.Invoke(strings.TtsExtractingPiper);
+                var extractPath = AppDataPaths.PiperDirectory;
+                if (Directory.Exists(Path.Combine(extractPath, "piper")))
                 {
-                    Directory.Delete(extractPath, true);
+                    Directory.Delete(Path.Combine(extractPath, "piper"), true);
                 }
                 ZipFile.ExtractToDirectory(zipPath, extractPath);
                 File.Delete(zipPath);
             }
 
             // Download German voice model if not exists
-            if (!File.Exists(_modelPath))
+            if (!File.Exists(AppDataPaths.ThorstenModelPath))
             {
-                statusCallback?.Invoke("Завантаження німецької моделі голосу (~65 MB)...");
+                statusCallback?.Invoke(strings.TtsDownloadingVoiceModel);
                 
                 using var modelResponse = await _httpClient.GetAsync(MODEL_URL, HttpCompletionOption.ResponseHeadersRead);
                 modelResponse.EnsureSuccessStatusCode();
@@ -146,7 +134,7 @@ public class TextToSpeechService : IDisposable
                 var totalBytes = modelResponse.Content.Headers.ContentLength ?? 0;
                 
                 await using (var contentStream = await modelResponse.Content.ReadAsStreamAsync())
-                await using (var fileStream = File.Create(_modelPath))
+                await using (var fileStream = File.Create(AppDataPaths.ThorstenModelPath))
                 {
                     var buffer = new byte[81920];
                     long totalRead = 0;
@@ -160,36 +148,37 @@ public class TextToSpeechService : IDisposable
                         if (totalBytes > 0)
                         {
                             var progress = (int)(totalRead * 100 / totalBytes);
-                            statusCallback?.Invoke($"Завантаження моделі голосу... {progress}%");
+                            statusCallback?.Invoke(string.Format(strings.TtsDownloadingVoiceModelProgress, progress));
                         }
                     }
                 }
             }
 
             // Download model config if not exists
-            if (!File.Exists(_modelConfigPath))
+            if (!File.Exists(AppDataPaths.ThorstenModelConfigPath))
             {
-                statusCallback?.Invoke("Завантаження конфігурації моделі...");
+                statusCallback?.Invoke(strings.TtsDownloadingModelConfig);
                 
                 using var configResponse = await _httpClient.GetAsync(MODEL_CONFIG_URL);
                 configResponse.EnsureSuccessStatusCode();
                 
                 var configContent = await configResponse.Content.ReadAsStringAsync();
-                await File.WriteAllTextAsync(_modelConfigPath, configContent);
+                await File.WriteAllTextAsync(AppDataPaths.ThorstenModelConfigPath, configContent);
             }
 
             // Verify piper executable exists
-            if (!File.Exists(_piperExePath))
+            if (!File.Exists(AppDataPaths.PiperExePath))
             {
-                throw new FileNotFoundException($"Piper executable не знайдено: {_piperExePath}");
+                throw new FileNotFoundException(string.Format(strings.TtsPiperNotFound, AppDataPaths.PiperExePath));
             }
 
             _isInitialized = true;
-            statusCallback?.Invoke("TTS готовий");
+            statusCallback?.Invoke(strings.TtsReady);
         }
         catch (Exception ex)
         {
-            statusCallback?.Invoke($"Помилка ініціалізації TTS: {ex.Message}");
+            var strings = LocalizationManager.Instance.Strings;
+            statusCallback?.Invoke(string.Format(strings.TtsInitError, ex.Message));
             throw;
         }
     }
@@ -199,28 +188,30 @@ public class TextToSpeechService : IDisposable
     /// </summary>
     public async Task<byte[]> SynthesizeToWavAsync(string text)
     {
+        var strings = LocalizationManager.Instance.Strings;
+        
         if (!_isInitialized)
         {
-            throw new InvalidOperationException("TTS не ініціалізовано");
+            throw new InvalidOperationException(strings.TtsNotInitialized);
         }
 
         if (string.IsNullOrWhiteSpace(text))
             return Array.Empty<byte>();
 
-        var outputPath = Path.Combine(_basePath, $"output_{Guid.NewGuid()}.wav");
+        var outputPath = AppDataPaths.GetTempFilePath(".wav");
 
         try
         {
             var startInfo = new ProcessStartInfo
             {
-                FileName = _piperExePath,
-                Arguments = $"--model \"{_modelPath}\" --output_file \"{outputPath}\"",
+                FileName = AppDataPaths.PiperExePath,
+                Arguments = $"--model \"{AppDataPaths.ThorstenModelPath}\" --output_file \"{outputPath}\"",
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                WorkingDirectory = Path.GetDirectoryName(_piperExePath)
+                WorkingDirectory = Path.GetDirectoryName(AppDataPaths.PiperExePath)
             };
 
             using var process = new Process();
@@ -249,7 +240,7 @@ public class TextToSpeechService : IDisposable
             // Read generated audio
             if (!File.Exists(outputPath))
             {
-                throw new FileNotFoundException("Piper не створив аудіо файл");
+                throw new FileNotFoundException(strings.TtsAudioFileNotCreated);
             }
             
             var audioData = await File.ReadAllBytesAsync(outputPath);
@@ -278,17 +269,18 @@ public class TextToSpeechService : IDisposable
         if (string.IsNullOrWhiteSpace(text))
             return;
 
-        statusCallback?.Invoke("Генерація мовлення...");
+        var strings = LocalizationManager.Instance.Strings;
+        statusCallback?.Invoke(strings.TtsGeneratingSpeech);
 
         var audioData = await SynthesizeToWavAsync(text);
         
         if (audioData.Length == 0)
         {
-            statusCallback?.Invoke("Помилка: порожнє аудіо");
+            statusCallback?.Invoke(strings.TtsEmptyAudioError);
             return;
         }
 
-        statusCallback?.Invoke("Відтворення...");
+        statusCallback?.Invoke(strings.TtsPlaying);
 
         // Play WAV audio using NAudio
         using var ms = new MemoryStream(audioData);
@@ -303,7 +295,7 @@ public class TextToSpeechService : IDisposable
             await Task.Delay(100);
         }
 
-        statusCallback?.Invoke("Готово");
+        statusCallback?.Invoke(strings.Ready);
     }
 
     /// <summary>
@@ -316,18 +308,20 @@ public class TextToSpeechService : IDisposable
             await InitializeAsync(statusCallback);
         }
 
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Текст не може бути порожнім", nameof(text));
+        var strings = LocalizationManager.Instance.Strings;
 
-        statusCallback?.Invoke("Генерація аудіо з тексту...");
+        if (string.IsNullOrWhiteSpace(text))
+            throw new ArgumentException(strings.TtsTextCannotBeEmpty, nameof(text));
+
+        statusCallback?.Invoke(strings.TtsGeneratingAudio);
 
         // Generate WAV from text using Piper
         var audioData = await SynthesizeToWavAsync(text);
         
         if (audioData.Length == 0)
-            throw new InvalidOperationException("Не вдалося згенерувати аудіо");
+            throw new InvalidOperationException(strings.TtsCouldNotGenerateAudio);
 
-        statusCallback?.Invoke("Конвертація в MP3...");
+        statusCallback?.Invoke(strings.TtsConvertingToMp3);
 
         // Convert WAV to MP3 using LAME
         using var wavStream = new MemoryStream(audioData);
@@ -343,7 +337,7 @@ public class TextToSpeechService : IDisposable
             await mp3Writer.WriteAsync(buffer.AsMemory(0, bytesRead));
         }
 
-        statusCallback?.Invoke($"Збережено: {Path.GetFileName(filePath)}");
+        statusCallback?.Invoke(string.Format(strings.TtsSavedAs, Path.GetFileName(filePath)));
     }
 
     public void Dispose()

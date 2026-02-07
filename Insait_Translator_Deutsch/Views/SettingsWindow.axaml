@@ -1,0 +1,204 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:chrome="using:Insait_Translator_Deutsch.Views.Chrome"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
+        x:Class="Insait_Translator_Deutsch.Views.SettingsWindow"
+        Title="Налаштування"
+        WindowStartupLocation="CenterOwner"
+        SystemDecorations="None"
+        Width="500"
+        Height="420"
+        CanResize="False"
+        UseLayoutRounding="True"
+        FontFamily="Segoe UI, Arial, Tahoma">
+
+    <Window.Resources>
+        <Color x:Key="AppBgColor">#FFF5E6D3</Color>
+        <Color x:Key="AppSurfaceColor">#FFFDF7EF</Color>
+        <Color x:Key="AppBorderColor">#FFE8D5B7</Color>
+        <Color x:Key="AppTextColor">#FF404040</Color>
+        <Color x:Key="AppTextMutedColor">#FF606060</Color>
+        <Color x:Key="AccentOrangeColor">#FFFF8C00</Color>
+        <Color x:Key="AccentPurpleColor">#7D2AE8</Color>
+
+        <SolidColorBrush x:Key="AppBgBrush" Color="{StaticResource AppBgColor}" />
+        <SolidColorBrush x:Key="AppSurfaceBrush" Color="{StaticResource AppSurfaceColor}" />
+        <SolidColorBrush x:Key="AppBorderBrush" Color="{StaticResource AppBorderColor}" />
+        <SolidColorBrush x:Key="AppTextBrush" Color="{StaticResource AppTextColor}" />
+        <SolidColorBrush x:Key="AppTextMutedBrush" Color="{StaticResource AppTextMutedColor}" />
+        <SolidColorBrush x:Key="AccentOrangeBrush" Color="{StaticResource AccentOrangeColor}" />
+        <SolidColorBrush x:Key="AccentPurpleBrush" Color="{StaticResource AccentPurpleColor}" />
+    </Window.Resources>
+
+    <Window.Styles>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{StaticResource AccentOrangeBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="#FFFFA000"/>
+        </Style>
+
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource AppTextBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AppBorderBrush}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.secondary:pointerover">
+            <Setter Property="Background" Value="#10000000"/>
+        </Style>
+
+        <Style Selector="TextBox.input">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AppBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style Selector="TextBox.input:focus">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentPurpleBrush}"/>
+        </Style>
+    </Window.Styles>
+
+    <Window.Background>
+        <SolidColorBrush Color="{StaticResource AppBgColor}"/>
+    </Window.Background>
+
+    <Grid RowDefinitions="42,*">
+        <chrome:CustomTitleBar Grid.Row="0">
+            <chrome:CustomTitleBar.LeftContent>
+                <TextBlock Name="TitleBarText" Text="⚙️ Налаштування" FontSize="14" FontWeight="SemiBold"
+                           Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+            </chrome:CustomTitleBar.LeftContent>
+        </chrome:CustomTitleBar>
+
+        <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto" Margin="24">
+            
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                <TextBlock Name="HeaderText" Text="⚙️ Налаштування" FontSize="24" FontWeight="Bold" 
+                           Foreground="{StaticResource AccentPurpleBrush}"/>
+                <TextBlock Name="SubheaderText" Text="Налаштуйте параметри перекладача" FontSize="14" 
+                           Foreground="{StaticResource AppTextMutedBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- Content -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="16">
+                    
+                    <!-- Google Gemini API Section -->
+                    <Border Background="{StaticResource AppSurfaceBrush}" 
+                            BorderBrush="{StaticResource AppBorderBrush}"
+                            BorderThickness="1" CornerRadius="12" Padding="16">
+                        <StackPanel Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="🔑" FontSize="20" VerticalAlignment="Center"/>
+                                <TextBlock Name="ApiSectionTitle" Text="Google Gemini API" FontSize="16" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <TextBlock Name="ApiSectionDescription" Text="Google Gemini забезпечує якісний AI-переклад. Отримайте API ключ на aistudio.google.com" 
+                                       FontSize="12" Foreground="{StaticResource AppTextMutedBrush}" TextWrapping="Wrap"/>
+
+                            <!-- Use Google API Toggle -->
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <CheckBox Name="UseGoogleApiCheckBox" VerticalAlignment="Center"/>
+                                <TextBlock Name="UseGoogleApiText" Text="Використовувати Google Gemini API" VerticalAlignment="Center"
+                                           Foreground="{StaticResource AppTextBrush}"/>
+                            </StackPanel>
+
+                            <!-- API Key Input -->
+                            <StackPanel Spacing="6">
+                                <TextBlock Name="ApiKeyLabel" Text="API Ключ:" FontSize="13" Foreground="{StaticResource AppTextBrush}"/>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBox Name="ApiKeyTextBox" Classes="input" Grid.Column="0"
+                                             PasswordChar="●" 
+                                             Watermark="Введіть ваш Google Gemini API ключ..."/>
+                                    <Button Name="ShowKeyButton" Grid.Column="1" Margin="8,0,0,0"
+                                            Classes="secondary" Padding="12,8" Click="ShowKey_Click">
+                                        <TextBlock Name="ShowKeyIcon" Text="👁️"/>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Test Button -->
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Button Name="TestKeyButton" Classes="secondary" Click="TestKey_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="🔍"/>
+                                        <TextBlock Name="TestKeyText" Text="Перевірити ключ"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Name="GetKeyButton" Classes="secondary" Click="GetKey_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="🌐"/>
+                                        <TextBlock Name="GetKeyText" Text="Отримати ключ"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Name="DeleteKeyButton" Classes="secondary" Click="DeleteKey_Click"
+                                        Background="#15EF4444" BorderBrush="#FFEF4444">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="🗑️"/>
+                                        <TextBlock Name="DeleteKeyText" Text="Видалити ключ"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+
+                            <!-- Status -->
+                            <TextBlock Name="StatusText" Text="" FontSize="12" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Provider Info Section -->
+                    <Border Background="{StaticResource AppSurfaceBrush}" 
+                            BorderBrush="{StaticResource AppBorderBrush}"
+                            BorderThickness="1" CornerRadius="12" Padding="16">
+                        <StackPanel Spacing="8">
+                            <TextBlock Name="AboutProvidersText" Text="ℹ️ Про провайдери перекладу" FontSize="14" FontWeight="SemiBold" 
+                                       Foreground="{StaticResource AppTextBrush}"/>
+                            
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="•" FontSize="12" Foreground="{StaticResource AppTextMutedBrush}"/>
+                                <TextBlock Name="ProviderMyMemoryText" Text="MyMemory" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AppTextMutedBrush}"/>
+                                <TextBlock Name="ProviderMyMemoryDescText" Text=" — безкоштовний, ліміт 10,000 символів/день" FontSize="12" Foreground="{StaticResource AppTextMutedBrush}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="•" FontSize="12" Foreground="{StaticResource AppTextMutedBrush}"/>
+                                <TextBlock Name="ProviderGoogleTranslateText" Text="Google Translate" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AppTextMutedBrush}"/>
+                                <TextBlock Name="ProviderGoogleTranslateDescText" Text=" — резервний при вичерпанні MyMemory" FontSize="12" Foreground="{StaticResource AppTextMutedBrush}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="•" FontSize="12" Foreground="{StaticResource AppTextMutedBrush}"/>
+                                <TextBlock Name="ProviderGoogleGeminiText" Text="Google Gemini API" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AppTextMutedBrush}"/>
+                                <TextBlock Name="ProviderGoogleGeminiDescText" Text=" — якісний AI-переклад, потребує API ключ (безкоштовний рівень)" FontSize="12" Foreground="{StaticResource AppTextMutedBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Footer -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12" Margin="0,20,0,0">
+                <Button Name="CancelButton" Classes="secondary" Click="Cancel_Click">
+                    <TextBlock Name="CancelButtonText" Text="Скасувати"/>
+                </Button>
+                <Button Name="SaveButton" Classes="primary" Click="Save_Click">
+                    <TextBlock Name="SaveButtonText" Text="Зберегти"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
+
