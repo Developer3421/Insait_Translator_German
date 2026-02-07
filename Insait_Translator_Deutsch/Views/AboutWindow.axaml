@@ -1,0 +1,204 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+        x:Class="Insait_Translator_Deutsch.Views.AboutWindow"
+        Title="Про додаток"
+        WindowStartupLocation="CenterOwner"
+        SystemDecorations="None"
+        Width="500"
+        Height="450"
+        CanResize="False"
+        UseLayoutRounding="True"
+        FontFamily="Segoe UI, Arial, Tahoma">
+
+    <!-- LOCAL RESOURCES -->
+    <Window.Resources>
+        <!-- German B1 palette -->
+        <Color x:Key="AppBgColor">#FFF5E6D3</Color>
+        <Color x:Key="AppSurfaceColor">#FFFDF7EF</Color>
+        <Color x:Key="AppBorderColor">#FFE8D5B7</Color>
+        <Color x:Key="AppTextColor">#FF404040</Color>
+        <Color x:Key="AppTextMutedColor">#FF606060</Color>
+
+        <Color x:Key="AccentOrangeColor">#FFFF8C00</Color>
+        <Color x:Key="AccentPurpleColor">#7D2AE8</Color>
+
+        <SolidColorBrush x:Key="AppBgBrush" Color="{StaticResource AppBgColor}" />
+        <SolidColorBrush x:Key="AppSurfaceBrush" Color="{StaticResource AppSurfaceColor}" />
+        <SolidColorBrush x:Key="AppBorderBrush" Color="{StaticResource AppBorderColor}" />
+        <SolidColorBrush x:Key="AppTextBrush" Color="{StaticResource AppTextColor}" />
+        <SolidColorBrush x:Key="AppTextMutedBrush" Color="{StaticResource AppTextMutedColor}" />
+
+        <SolidColorBrush x:Key="AccentOrangeBrush" Color="{StaticResource AccentOrangeColor}" />
+        <SolidColorBrush x:Key="AccentPurpleBrush" Color="{StaticResource AccentPurpleColor}" />
+
+        <!-- Ukraine flag colors -->
+        <SolidColorBrush x:Key="UkraineBlueBrush" Color="#FF0057B7"/>
+        <SolidColorBrush x:Key="UkraineYellowBrush" Color="#FFFFD700"/>
+        
+        <!-- Germany flag colors -->
+        <SolidColorBrush x:Key="GermanyBlackBrush" Color="#FF000000"/>
+        <SolidColorBrush x:Key="GermanyRedBrush" Color="#FFDD0000"/>
+        <SolidColorBrush x:Key="GermanyYellowBrush" Color="#FFFFCC00"/>
+
+        <!-- Gray Gradient for Title Bar -->
+        <LinearGradientBrush x:Key="GrayGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FFE0E0E0" Offset="0"/>
+            <GradientStop Color="#FFD0D0D0" Offset="0.3"/>
+            <GradientStop Color="#FFC5C5C5" Offset="0.7"/>
+            <GradientStop Color="#FFC0C0C0" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Resources>
+
+    <Window.Styles>
+        <!-- Close Button -->
+        <Style Selector="Button.close-button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#303030"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.close-button:pointerover">
+            <Setter Property="Background" Value="#40FF5C5C"/>
+        </Style>
+
+        <!-- OK Button -->
+        <Style Selector="Button.ok-button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="Background" Value="{StaticResource AccentOrangeBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource AccentPurpleBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentPurpleBrush}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="24,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.ok-button:pointerover">
+            <Setter Property="Background" Value="#FFFFA000"/>
+        </Style>
+    </Window.Styles>
+
+    <Window.Background>
+        <SolidColorBrush Color="{StaticResource AppBgColor}"/>
+    </Window.Background>
+
+    <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="8">
+        <Grid RowDefinitions="36,*">
+
+            <!-- Title Bar -->
+            <Grid Grid.Row="0" Name="TitleBar" Background="{StaticResource GrayGradient}">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="ℹ️ Про додаток" 
+                               FontSize="14" FontWeight="SemiBold" 
+                               Foreground="{StaticResource AppTextBrush}"
+                               VerticalAlignment="Center" Margin="12,0"/>
+                    <Button Grid.Column="1" Classes="close-button" Padding="0" Click="CloseButton_Click">
+                        <PathIcon Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" 
+                                  Width="12" Height="12" Foreground="#303030"/>
+                    </Button>
+                </Grid>
+            </Grid>
+
+            <!-- Content -->
+            <Border Grid.Row="1" Background="{StaticResource AppSurfaceBrush}" Padding="24">
+                <Grid RowDefinitions="Auto,Auto,*,Auto">
+                    
+                    <!-- App Icon and Name -->
+                    <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,20">
+                        <!-- German flag icon -->
+                        <Border Width="80" Height="50" CornerRadius="8" ClipToBounds="True" 
+                                HorizontalAlignment="Center" Margin="0,0,0,16"
+                                BorderThickness="2" BorderBrush="{StaticResource AccentPurpleBrush}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Rectangle Grid.Row="0" Fill="{StaticResource GermanyBlackBrush}"/>
+                                <Rectangle Grid.Row="1" Fill="{StaticResource GermanyRedBrush}"/>
+                                <Rectangle Grid.Row="2" Fill="{StaticResource GermanyYellowBrush}"/>
+                            </Grid>
+                        </Border>
+                        
+                        <TextBlock Text="🌍 Insait Перекладач → Deutsch" 
+                                   FontSize="24" FontWeight="Bold" 
+                                   Foreground="{StaticResource AccentPurpleBrush}"
+                                   HorizontalAlignment="Center"/>
+                        
+                        <TextBlock Text="Версія 1.0.0" 
+                                   FontSize="14" Foreground="{StaticResource AppTextMutedBrush}"
+                                   HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <!-- Description -->
+                    <Border Grid.Row="1" Background="#20000000" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                        <TextBlock TextWrapping="Wrap" FontSize="13" LineHeight="22"
+                                   Foreground="{StaticResource AppTextBrush}">
+                            <Run FontWeight="SemiBold">Універсальний Перекладач на Deutsch</Run>
+                            <LineBreak/>
+                            <LineBreak/>
+                            Цей додаток дозволяє легко перекладати тексти з будь-якої мови на німецьку та озвучувати переклад.
+                            <LineBreak/>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">Основні можливості:</Run>
+                            <LineBreak/>
+                            • Переклад тексту з будь-якої мови на німецьку
+                            <LineBreak/>
+                            • Озвучення перекладу (Text-to-Speech)
+                            <LineBreak/>
+                            • Збереження перекладу як текст або MP3
+                            <LineBreak/>
+                            • Робота з файлами та буфером обміну
+                        </TextBlock>
+                    </Border>
+
+                    <!-- Technologies -->
+                    <StackPanel Grid.Row="2" Margin="0,0,0,16">
+                        <TextBlock Text="Технології:" FontWeight="SemiBold" FontSize="13"
+                                   Foreground="{StaticResource AppTextBrush}" Margin="0,0,0,8"/>
+                        <WrapPanel>
+                            <Border Background="{StaticResource AccentOrangeBrush}" CornerRadius="12" 
+                                    Padding="10,4" Margin="0,0,8,8">
+                                <TextBlock Text=".NET 10" FontSize="11" FontWeight="SemiBold"
+                                           Foreground="{StaticResource AccentPurpleBrush}"/>
+                            </Border>
+                            <Border Background="{StaticResource AccentOrangeBrush}" CornerRadius="12" 
+                                    Padding="10,4" Margin="0,0,8,8">
+                                <TextBlock Text="Avalonia UI" FontSize="11" FontWeight="SemiBold"
+                                           Foreground="{StaticResource AccentPurpleBrush}"/>
+                            </Border>
+                            <Border Background="{StaticResource AccentOrangeBrush}" CornerRadius="12" 
+                                    Padding="10,4" Margin="0,0,8,8">
+                                <TextBlock Text="Azure AI" FontSize="11" FontWeight="SemiBold"
+                                           Foreground="{StaticResource AccentPurpleBrush}"/>
+                            </Border>
+                            <Border Background="{StaticResource AccentOrangeBrush}" CornerRadius="12" 
+                                    Padding="10,4" Margin="0,0,8,8">
+                                <TextBlock Text="Text-to-Speech" FontSize="11" FontWeight="SemiBold"
+                                           Foreground="{StaticResource AccentPurpleBrush}"/>
+                            </Border>
+                        </WrapPanel>
+
+                        <TextBlock Text="© 2026 Insait. Всі права захищено." 
+                                   FontSize="11" Foreground="{StaticResource AppTextMutedBrush}"
+                                   HorizontalAlignment="Center" Margin="0,16,0,0"/>
+                    </StackPanel>
+
+                    <!-- OK Button -->
+                    <Button Grid.Row="3" Classes="ok-button" Content="OK" 
+                            HorizontalAlignment="Center" Click="OkButton_Click"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
+

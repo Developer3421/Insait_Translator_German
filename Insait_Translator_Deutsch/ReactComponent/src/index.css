@@ -1,0 +1,38 @@
+/* German B1 palette - matching the native app design */
+:root {
+  --app-bg-color: #F5E6D3;
+  --app-surface-color: #FDF7EF;
+  --app-border-color: #E8D5B7;
+  --app-text-color: #404040;
+  --app-text-muted-color: #606060;
+
+  --accent-orange: #FF8C00;
+  --accent-orange-hover: #FFA000;
+  --accent-purple: #7D2AE8;
+  --accent-purple-hover: #A78BFA;
+
+  /* Ukraine flag colors */
+  --ukraine-blue: #0057B7;
+  --ukraine-yellow: #FFD700;
+
+  /* Germany flag colors */
+  --germany-black: #000000;
+  --germany-red: #DD0000;
+  --germany-gold: #FFCC00;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, Tahoma, sans-serif;
+}
+
+#root {
+  display: block;
+  height: 100vh;
+}
+
