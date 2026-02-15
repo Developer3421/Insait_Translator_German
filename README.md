@@ -1,9 +1,9 @@
-# Insait Translator → German
+# Insait Translator: German
 
 A privacy-first Windows desktop translator focused on translating **any language to German**, with optional German Text-to-Speech and an optional local Web UI.
 
 ## Overview
-Insait Translator → German is a Windows desktop app built with Avalonia. It translates text using online providers (with automatic fallback) and stores your workspaces/settings locally.
+Insait Translator: German is a Windows desktop app built with Avalonia. It translates text using online providers (with automatic fallback) and stores your workspaces/settings locally.
 
 The app **does not send your texts or settings to the developer’s servers**. Network requests are made **only** to the translation provider(s) you choose to use.
 
@@ -35,23 +35,6 @@ The app **does not send your texts or settings to the developer’s servers**. N
 - Sensitive settings (e.g., API key) are encrypted at rest.
 - Your text is sent over the network only when you use an online translation provider.
 
-See: `PRIVACY_POLICY.md`
-
-## Optional Web UI (ReactComponent)
-The repo includes a React UI in `ReactComponent/`.
-
-### Dev server (contributors)
-```bash
-cd ReactComponent
-npm install
-npm run dev:4200
-```
-
-### Production build
-```bash
-cd ReactComponent
-npm run build
-```
 
 The output goes to `ReactComponent/dist` and can be served locally by the desktop app.
 
