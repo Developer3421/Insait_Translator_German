@@ -39,8 +39,9 @@ public static class AppDataPaths
 
     /// <summary>
     /// Path to Piper executable
+    /// After extraction, piper.exe is at: %LOCALAPPDATA%\InsaitTranslator\piper\piper.exe
     /// </summary>
-    public static string PiperExePath => Path.Combine(PiperDirectory, "piper", "piper.exe");
+    public static string PiperExePath => Path.Combine(PiperDirectory, "piper.exe");
 
     /// <summary>
     /// Directory for AI voice models (Thorsten and others)
@@ -95,6 +96,11 @@ public static class AppDataPaths
 
     /// <summary>
     /// Directory for temporary files (audio processing, etc.)
+    /// Used for:
+    /// - Temporary WAV files during TTS synthesis
+    /// - Intermediate audio files during MP3 conversion
+    /// - Files are automatically cleaned up after processing
+    /// - Old files (>24 hours) are removed by CleanupTempFiles()
     /// </summary>
     public static string TempDirectory
     {

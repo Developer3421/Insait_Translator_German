@@ -72,7 +72,7 @@ public class LocalizationManager : INotifyPropertyChanged
     private static readonly LocalizedStrings UkrainianStrings = new()
     {
         // Window
-        WindowTitle = "Insait Перекладач Deutsch",
+        WindowTitle = "Insait Перекладач German",
         TitleBarText = "🌍 Insait Перекладач 🇩🇪",
 
         // Tabs
@@ -89,7 +89,7 @@ public class LocalizationManager : INotifyPropertyChanged
         // Main area
         AppTitle = "Переклад на німецьку",
         Ukrainian = "Мова тексту",
-        German = "Deutsch",
+        German = "German",
         EnterTextPlaceholder = "Введіть текст для перекладу...",
         TranslationPlaceholder = "Переклад німецькою з'явиться тут...",
         
@@ -102,6 +102,7 @@ public class LocalizationManager : INotifyPropertyChanged
         SpeakUkrainianTooltip = "Прослухати вихідний текст",
         SpeakGermanTooltip = "Прослухати німецькою",
         PasteTooltip = "Вставити з буфера",
+        PasteGermanTooltip = "Вставити текст для озвучення",
         CopyTooltip = "Копіювати переклад",
         SaveTextTooltip = "Зберегти як текстовий файл",
         SaveMp3Tooltip = "Зберегти як MP3",
@@ -141,9 +142,9 @@ public class LocalizationManager : INotifyPropertyChanged
         
         // About window
         AboutWindowTitle = "ℹ️ Про додаток",
-        AboutAppName = "🌍 Insait Перекладач → Deutsch",
+        AboutAppName = "🌍 Insait Перекладач → German",
         AboutVersion = "Версія 1.0.0",
-        AboutDescriptionTitle = "Універсальний Перекладач на Deutsch",
+        AboutDescriptionTitle = "Універсальний Перекладач на German",
         AboutDescription = "Цей додаток дозволяє легко перекладати тексти з будь-якої мови на німецьку та озвучувати переклад.",
         AboutFeaturesTitle = "Основні можливості:",
         AboutFeature1 = "• Переклад тексту з будь-якої мови на німецьку",
@@ -190,17 +191,24 @@ public class LocalizationManager : INotifyPropertyChanged
         TranslatingViaGoogleApi = "Переклад через Google Cloud API...",
         TranslatedViaGoogleApi = "✓ Перекладено через Google Cloud API",
         MyMemoryExhaustedFallback = "({0} вичерпано → {1})",
+        TranslationError = "Помилка перекладу: {0}",
+        ApiKeyValid = "API ключ дійсний! Google Gemini API працює.",
+        ApiKeyError = "Помилка: {0} - {1}",
+        ApiKeyConnectionError = "Помилка підключення: {0}",
+        MyMemoryDailyQuotaExceeded = "MyMemory денний ліміт вичерпано",
+        MyMemoryQuotaWarning = "MyMemory попередження про квоту",
+        MyMemoryApiError = "MyMemory API помилка: статус {0}",
         
         // TTS messages
         TtsAvailableOnlyInNative = "TTS доступний лише в нативному додатку",
         Mp3GeneratedInNative = "MP3 генерується в нативному додатку",
         TtsPlatformNotSupported = "Piper TTS наразі підтримується лише на Windows",
-        TtsDownloadingPiper = "Завантаження Piper TTS (~15 MB)...",
-        TtsDownloadingPiperProgress = "Завантаження Piper TTS... {0}%",
-        TtsExtractingPiper = "Розпаковка Piper...",
-        TtsDownloadingVoiceModel = "Завантаження німецької моделі голосу (~65 MB)...",
-        TtsDownloadingVoiceModelProgress = "Завантаження моделі голосу... {0}%",
-        TtsDownloadingModelConfig = "Завантаження конфігурації моделі...",
+        TtsDownloadingPiper = "Ініціалізація Piper TTS...",
+        TtsDownloadingPiperProgress = "Ініціалізація Piper TTS... {0}%",
+        TtsExtractingPiper = "Розпаковка Piper із вбудованих ресурсів...",
+        TtsDownloadingVoiceModel = "Ініціалізація німецької моделі голосу...",
+        TtsDownloadingVoiceModelProgress = "Розпаковка моделі голосу... {0}%",
+        TtsDownloadingModelConfig = "Підготовка конфігурації моделі...",
         TtsPiperNotFound = "Piper executable не знайдено: {0}",
         TtsReady = "TTS готовий",
         TtsInitError = "Помилка ініціалізації TTS: {0}",
@@ -213,7 +221,24 @@ public class LocalizationManager : INotifyPropertyChanged
         TtsGeneratingAudio = "Генерація аудіо з тексту...",
         TtsCouldNotGenerateAudio = "Не вдалося згенерувати аудіо",
         TtsConvertingToMp3 = "Конвертація в MP3...",
-        TtsSavedAs = "Збережено: {0}"
+        TtsSavedAs = "Збережено: {0}",
+        
+        // User Agreement
+        UserAgreementTitle = "📜 Угода користувача",
+        UserAgreementSubheader = "Умови використання додатку",
+        UserAgreementPrivacyTitle = "🔒 Конфіденційність даних",
+        UserAgreementPrivacyText = "Цей додаток не передає жодних даних на наші сервери. Вся інформація обробляється локально на вашому пристрої.",
+        UserAgreementLocalStorageTitle = "💾 Локальне зберігання",
+        UserAgreementLocalStorageText = "Читання та зберігання німецького перекладу або тексту відбувається виключно локально на вашому пристрої. Ваші дані залишаються під вашим контролем.",
+        UserAgreementProvidersTitle = "🌐 Провайдери перекладу",
+        UserAgreementProvidersText = "Для здійснення перекладу додаток використовує сторонні сервіси (MyMemory, Gtranslate, Google Gemini API). Кожен із цих провайдерів має власну угоду користувача та політику конфіденційності. Рекомендуємо ознайомитися з їхніми умовами на офіційних сайтах.",
+        UserAgreementResponsibilityTitle = "⚠️ Відповідальність",
+        UserAgreementResponsibilityText = "Текст, який ви вводите для перекладу, надсилається безпосередньо провайдерам перекладу. Ми не несемо відповідальності за обробку даних цими сервісами. Не вводьте конфіденційну або особисту інформацію.",
+        UserAgreementConsentTitle = "✅ Згода",
+        UserAgreementConsentText = "Використовуючи цей додаток, ви погоджуєтесь з цими умовами та умовами провайдерів перекладу.",
+        UserAgreement = "Угода користувача",
+        UserAgreementTooltip = "Переглянути угоду користувача",
+        UserAgreementAccept = "Зрозуміло"
     };
     #endregion
 
@@ -221,7 +246,7 @@ public class LocalizationManager : INotifyPropertyChanged
     private static readonly LocalizedStrings EnglishStrings = new()
     {
         // Window
-        WindowTitle = "Insait Translator Deutsch",
+        WindowTitle = "Insait Translator German",
         TitleBarText = "🌍 Insait Translator 🇩🇪",
 
         // Tabs
@@ -251,6 +276,7 @@ public class LocalizationManager : INotifyPropertyChanged
         SpeakUkrainianTooltip = "Listen to source text",
         SpeakGermanTooltip = "Listen in German",
         PasteTooltip = "Paste from clipboard",
+        PasteGermanTooltip = "Paste text to listen",
         CopyTooltip = "Copy translation",
         SaveTextTooltip = "Save as text file",
         SaveMp3Tooltip = "Save as MP3",
@@ -290,7 +316,7 @@ public class LocalizationManager : INotifyPropertyChanged
         
         // About window
         AboutWindowTitle = "ℹ️ About",
-        AboutAppName = "🌍 Insait Translator → Deutsch",
+        AboutAppName = "🌍 Insait Translator → German",
         AboutVersion = "Version 1.0.0",
         AboutDescriptionTitle = "Universal Translator to German",
         AboutDescription = "This app allows you to easily translate text from any language to German and listen to the translation.",
@@ -339,17 +365,24 @@ public class LocalizationManager : INotifyPropertyChanged
         TranslatingViaGoogleApi = "Translating via Google Cloud API...",
         TranslatedViaGoogleApi = "✓ Translated via Google Cloud API",
         MyMemoryExhaustedFallback = "({0} exhausted → {1})",
+        TranslationError = "Translation error: {0}",
+        ApiKeyValid = "API key is valid! Google Gemini API works.",
+        ApiKeyError = "Error: {0} - {1}",
+        ApiKeyConnectionError = "Connection error: {0}",
+        MyMemoryDailyQuotaExceeded = "MyMemory daily quota exceeded",
+        MyMemoryQuotaWarning = "MyMemory quota warning detected",
+        MyMemoryApiError = "MyMemory API error: status {0}",
         
         // TTS messages
         TtsAvailableOnlyInNative = "TTS is only available in the native app",
         Mp3GeneratedInNative = "MP3 is generated in the native app",
         TtsPlatformNotSupported = "Piper TTS is currently only supported on Windows",
-        TtsDownloadingPiper = "Downloading Piper TTS (~15 MB)...",
-        TtsDownloadingPiperProgress = "Downloading Piper TTS... {0}%",
-        TtsExtractingPiper = "Extracting Piper...",
-        TtsDownloadingVoiceModel = "Downloading German voice model (~65 MB)...",
-        TtsDownloadingVoiceModelProgress = "Downloading voice model... {0}%",
-        TtsDownloadingModelConfig = "Downloading model configuration...",
+        TtsDownloadingPiper = "Initializing Piper TTS...",
+        TtsDownloadingPiperProgress = "Initializing Piper TTS... {0}%",
+        TtsExtractingPiper = "Extracting Piper from embedded resources...",
+        TtsDownloadingVoiceModel = "Initializing German voice model...",
+        TtsDownloadingVoiceModelProgress = "Extracting voice model... {0}%",
+        TtsDownloadingModelConfig = "Preparing model configuration...",
         TtsPiperNotFound = "Piper executable not found: {0}",
         TtsReady = "TTS ready",
         TtsInitError = "TTS initialization error: {0}",
@@ -362,7 +395,24 @@ public class LocalizationManager : INotifyPropertyChanged
         TtsGeneratingAudio = "Generating audio from text...",
         TtsCouldNotGenerateAudio = "Could not generate audio",
         TtsConvertingToMp3 = "Converting to MP3...",
-        TtsSavedAs = "Saved: {0}"
+        TtsSavedAs = "Saved: {0}",
+        
+        // User Agreement
+        UserAgreementTitle = "📜 User Agreement",
+        UserAgreementSubheader = "Terms of use",
+        UserAgreementPrivacyTitle = "🔒 Data Privacy",
+        UserAgreementPrivacyText = "This application does not transmit any data to our servers. All information is processed locally on your device.",
+        UserAgreementLocalStorageTitle = "💾 Local Storage",
+        UserAgreementLocalStorageText = "Reading and saving German translations or text is done exclusively locally on your device. Your data remains under your control.",
+        UserAgreementProvidersTitle = "🌐 Translation Providers",
+        UserAgreementProvidersText = "To perform translations, the app uses third-party services (MyMemory, Gtranslate, Google Gemini API). Each of these providers has its own user agreement and privacy policy. We recommend reviewing their terms on official websites.",
+        UserAgreementResponsibilityTitle = "⚠️ Responsibility",
+        UserAgreementResponsibilityText = "The text you enter for translation is sent directly to translation providers. We are not responsible for data processing by these services. Do not enter confidential or personal information.",
+        UserAgreementConsentTitle = "✅ Consent",
+        UserAgreementConsentText = "By using this application, you agree to these terms and the terms of the translation providers.",
+        UserAgreement = "User Agreement",
+        UserAgreementTooltip = "View user agreement",
+        UserAgreementAccept = "I Understand"
     };
     #endregion
 
@@ -400,6 +450,7 @@ public class LocalizationManager : INotifyPropertyChanged
         SpeakUkrainianTooltip = "Ausgangstext anhören",
         SpeakGermanTooltip = "Auf Deutsch anhören",
         PasteTooltip = "Aus Zwischenablage einfügen",
+        PasteGermanTooltip = "Text zum Anhören einfügen",
         CopyTooltip = "Übersetzung kopieren",
         SaveTextTooltip = "Als Textdatei speichern",
         SaveMp3Tooltip = "Als MP3 speichern",
@@ -488,17 +539,24 @@ public class LocalizationManager : INotifyPropertyChanged
         TranslatingViaGoogleApi = "Übersetzung über Google Cloud API...",
         TranslatedViaGoogleApi = "✓ Über Google Cloud API übersetzt",
         MyMemoryExhaustedFallback = "({0} erschöpft → {1})",
+        TranslationError = "Übersetzungsfehler: {0}",
+        ApiKeyValid = "API-Schlüssel ist gültig! Google Gemini API funktioniert.",
+        ApiKeyError = "Fehler: {0} - {1}",
+        ApiKeyConnectionError = "Verbindungsfehler: {0}",
+        MyMemoryDailyQuotaExceeded = "MyMemory Tageslimit überschritten",
+        MyMemoryQuotaWarning = "MyMemory Kontingentwarnung erkannt",
+        MyMemoryApiError = "MyMemory API-Fehler: Status {0}",
         
         // TTS messages
         TtsAvailableOnlyInNative = "TTS ist nur in der nativen App verfügbar",
         Mp3GeneratedInNative = "MP3 wird in der nativen App generiert",
         TtsPlatformNotSupported = "Piper TTS wird derzeit nur unter Windows unterstützt",
-        TtsDownloadingPiper = "Piper TTS wird heruntergeladen (~15 MB)...",
-        TtsDownloadingPiperProgress = "Piper TTS wird heruntergeladen... {0}%",
-        TtsExtractingPiper = "Piper wird entpackt...",
-        TtsDownloadingVoiceModel = "Deutsches Sprachmodell wird heruntergeladen (~65 MB)...",
-        TtsDownloadingVoiceModelProgress = "Sprachmodell wird heruntergeladen... {0}%",
-        TtsDownloadingModelConfig = "Modellkonfiguration wird heruntergeladen...",
+        TtsDownloadingPiper = "Piper TTS wird initialisiert...",
+        TtsDownloadingPiperProgress = "Piper TTS wird initialisiert... {0}%",
+        TtsExtractingPiper = "Piper wird aus eingebetteten Ressourcen entpackt...",
+        TtsDownloadingVoiceModel = "Deutsches Sprachmodell wird initialisiert...",
+        TtsDownloadingVoiceModelProgress = "Sprachmodell wird entpackt... {0}%",
+        TtsDownloadingModelConfig = "Modellkonfiguration wird vorbereitet...",
         TtsPiperNotFound = "Piper-Executable nicht gefunden: {0}",
         TtsReady = "TTS bereit",
         TtsInitError = "TTS-Initialisierungsfehler: {0}",
@@ -511,7 +569,24 @@ public class LocalizationManager : INotifyPropertyChanged
         TtsGeneratingAudio = "Audio aus Text wird generiert...",
         TtsCouldNotGenerateAudio = "Audio konnte nicht generiert werden",
         TtsConvertingToMp3 = "Konvertierung in MP3...",
-        TtsSavedAs = "Gespeichert: {0}"
+        TtsSavedAs = "Gespeichert: {0}",
+        
+        // User Agreement
+        UserAgreementTitle = "📜 Nutzungsvereinbarung",
+        UserAgreementSubheader = "Nutzungsbedingungen",
+        UserAgreementPrivacyTitle = "🔒 Datenschutz",
+        UserAgreementPrivacyText = "Diese Anwendung überträgt keine Daten an unsere Server. Alle Informationen werden lokal auf Ihrem Gerät verarbeitet.",
+        UserAgreementLocalStorageTitle = "💾 Lokale Speicherung",
+        UserAgreementLocalStorageText = "Das Lesen und Speichern von deutschen Übersetzungen oder Texten erfolgt ausschließlich lokal auf Ihrem Gerät. Ihre Daten bleiben unter Ihrer Kontrolle.",
+        UserAgreementProvidersTitle = "🌐 Übersetzungsanbieter",
+        UserAgreementProvidersText = "Für Übersetzungen verwendet die App Drittanbieterdienste (MyMemory, Gtranslate, Google Gemini API). Jeder dieser Anbieter hat seine eigene Nutzungsvereinbarung und Datenschutzrichtlinie. Wir empfehlen, deren Bedingungen auf den offiziellen Websites zu lesen.",
+        UserAgreementResponsibilityTitle = "⚠️ Verantwortung",
+        UserAgreementResponsibilityText = "Der Text, den Sie zur Übersetzung eingeben, wird direkt an die Übersetzungsanbieter gesendet. Wir sind nicht verantwortlich für die Datenverarbeitung durch diese Dienste. Geben Sie keine vertraulichen oder persönlichen Informationen ein.",
+        UserAgreementConsentTitle = "✅ Zustimmung",
+        UserAgreementConsentText = "Durch die Nutzung dieser Anwendung stimmen Sie diesen Bedingungen und den Bedingungen der Übersetzungsanbieter zu.",
+        UserAgreement = "Nutzungsvereinbarung",
+        UserAgreementTooltip = "Nutzungsvereinbarung anzeigen",
+        UserAgreementAccept = "Verstanden"
     };
     #endregion
 
@@ -519,7 +594,7 @@ public class LocalizationManager : INotifyPropertyChanged
     private static readonly LocalizedStrings RussianStrings = new()
     {
         // Window
-        WindowTitle = "Insait Переводчик Deutsch",
+        WindowTitle = "Insait Переводчик German",
         TitleBarText = "🌍 Insait Переводчик 🇩🇪",
 
         // Tabs
@@ -536,7 +611,7 @@ public class LocalizationManager : INotifyPropertyChanged
         // Main area
         AppTitle = "Перевод на немецкий",
         Ukrainian = "Язык текста",
-        German = "Deutsch",
+        German = "German",
         EnterTextPlaceholder = "Введите текст для перевода...",
         TranslationPlaceholder = "Перевод на немецкий появится здесь...",
         
@@ -549,6 +624,7 @@ public class LocalizationManager : INotifyPropertyChanged
         SpeakUkrainianTooltip = "Прослушать исходный текст",
         SpeakGermanTooltip = "Прослушать на немецком",
         PasteTooltip = "Вставить из буфера",
+        PasteGermanTooltip = "Вставить текст для озвучивания",
         CopyTooltip = "Копировать перевод",
         SaveTextTooltip = "Сохранить как текстовый файл",
         SaveMp3Tooltip = "Сохранить как MP3",
@@ -588,7 +664,7 @@ public class LocalizationManager : INotifyPropertyChanged
         
         // About window
         AboutWindowTitle = "ℹ️ О программе",
-        AboutAppName = "🌍 Insait Переводчик → Deutsch",
+        AboutAppName = "🌍 Insait Переводчик → German",
         AboutVersion = "Версия 1.0.0",
         AboutDescriptionTitle = "Универсальный переводчик на немецкий",
         AboutDescription = "Это приложение позволяет легко переводить тексты с любого языка на немецкий и озвучивать перевод.",
@@ -637,17 +713,24 @@ public class LocalizationManager : INotifyPropertyChanged
         TranslatingViaGoogleApi = "Перевод через Google Cloud API...",
         TranslatedViaGoogleApi = "✓ Переведено через Google Cloud API",
         MyMemoryExhaustedFallback = "({0} исчерпан → {1})",
+        TranslationError = "Ошибка перевода: {0}",
+        ApiKeyValid = "API ключ действителен! Google Gemini API работает.",
+        ApiKeyError = "Ошибка: {0} - {1}",
+        ApiKeyConnectionError = "Ошибка подключения: {0}",
+        MyMemoryDailyQuotaExceeded = "Дневной лимит MyMemory исчерпан",
+        MyMemoryQuotaWarning = "Обнаружено предупреждение о квоте MyMemory",
+        MyMemoryApiError = "Ошибка MyMemory API: статус {0}",
         
         // TTS messages
         TtsAvailableOnlyInNative = "TTS доступен только в нативном приложении",
         Mp3GeneratedInNative = "MP3 генерируется в нативном приложении",
         TtsPlatformNotSupported = "Piper TTS пока поддерживается только на Windows",
-        TtsDownloadingPiper = "Загрузка Piper TTS (~15 MB)...",
-        TtsDownloadingPiperProgress = "Загрузка Piper TTS... {0}%",
-        TtsExtractingPiper = "Распаковка Piper...",
-        TtsDownloadingVoiceModel = "Загрузка немецкой голосовой модели (~65 MB)...",
-        TtsDownloadingVoiceModelProgress = "Загрузка голосовой модели... {0}%",
-        TtsDownloadingModelConfig = "Загрузка конфигурации модели...",
+        TtsDownloadingPiper = "Инициализация Piper TTS...",
+        TtsDownloadingPiperProgress = "Инициализация Piper TTS... {0}%",
+        TtsExtractingPiper = "Распаковка Piper из встроенных ресурсов...",
+        TtsDownloadingVoiceModel = "Инициализация немецкой голосовой модели...",
+        TtsDownloadingVoiceModelProgress = "Распаковка голосовой модели... {0}%",
+        TtsDownloadingModelConfig = "Подготовка конфигурации модели...",
         TtsPiperNotFound = "Piper executable не найден: {0}",
         TtsReady = "TTS готов",
         TtsInitError = "Ошибка инициализации TTS: {0}",
@@ -660,7 +743,24 @@ public class LocalizationManager : INotifyPropertyChanged
         TtsGeneratingAudio = "Генерация аудио из текста...",
         TtsCouldNotGenerateAudio = "Не удалось сгенерировать аудио",
         TtsConvertingToMp3 = "Конвертация в MP3...",
-        TtsSavedAs = "Сохранено: {0}"
+        TtsSavedAs = "Сохранено: {0}",
+        
+        // User Agreement
+        UserAgreementTitle = "📜 Пользовательское соглашение",
+        UserAgreementSubheader = "Условия использования",
+        UserAgreementPrivacyTitle = "🔒 Конфиденциальность данных",
+        UserAgreementPrivacyText = "Это приложение не передаёт никаких данных на наши серверы. Вся информация обрабатывается локально на вашем устройстве.",
+        UserAgreementLocalStorageTitle = "💾 Локальное хранение",
+        UserAgreementLocalStorageText = "Чтение и сохранение немецкого перевода или текста происходит исключительно локально на вашем устройстве. Ваши данные остаются под вашим контролем.",
+        UserAgreementProvidersTitle = "🌐 Провайдеры перевода",
+        UserAgreementProvidersText = "Для осуществления перевода приложение использует сторонние сервисы (MyMemory, Gtranslate, Google Gemini API). Каждый из этих провайдеров имеет собственное пользовательское соглашение и политику конфиденциальности. Рекомендуем ознакомиться с их условиями на официальных сайтах.",
+        UserAgreementResponsibilityTitle = "⚠️ Ответственность",
+        UserAgreementResponsibilityText = "Текст, который вы вводите для перевода, отправляется напрямую провайдерам перевода. Мы не несём ответственности за обработку данных этими сервисами. Не вводите конфиденциальную или личную информацию.",
+        UserAgreementConsentTitle = "✅ Согласие",
+        UserAgreementConsentText = "Используя это приложение, вы соглашаетесь с этими условиями и условиями провайдеров перевода.",
+        UserAgreement = "Пользовательское соглашение",
+        UserAgreementTooltip = "Просмотреть пользовательское соглашение",
+        UserAgreementAccept = "Понятно"
     };
     #endregion
 
@@ -668,7 +768,7 @@ public class LocalizationManager : INotifyPropertyChanged
     private static readonly LocalizedStrings TurkishStrings = new()
     {
         // Window
-        WindowTitle = "Insait Çevirmen Deutsch",
+        WindowTitle = "Insait Çevirmen German",
         TitleBarText = "🌍 Insait Çevirmen 🇩🇪",
 
         // Tabs
@@ -698,6 +798,7 @@ public class LocalizationManager : INotifyPropertyChanged
         SpeakUkrainianTooltip = "Kaynak metni dinle",
         SpeakGermanTooltip = "Almanca dinle",
         PasteTooltip = "Panodan yapıştır",
+        PasteGermanTooltip = "Dinlemek için metin yapıştır",
         CopyTooltip = "Çeviriyi kopyala",
         SaveTextTooltip = "Metin dosyası olarak kaydet",
         SaveMp3Tooltip = "MP3 olarak kaydet",
@@ -737,7 +838,7 @@ public class LocalizationManager : INotifyPropertyChanged
         
         // About window
         AboutWindowTitle = "ℹ️ Hakkında",
-        AboutAppName = "🌍 Insait Çevirmen → Deutsch",
+        AboutAppName = "🌍 Insait Çevirmen → German",
         AboutVersion = "Sürüm 1.0.0",
         AboutDescriptionTitle = "Evrensel Almanca Çevirmen",
         AboutDescription = "Bu uygulama, herhangi bir dilden Almancaya kolayca metin çevirmenizi ve çeviriyi dinlemenizi sağlar.",
@@ -786,17 +887,24 @@ public class LocalizationManager : INotifyPropertyChanged
         TranslatingViaGoogleApi = "Google Cloud API ile çevriliyor...",
         TranslatedViaGoogleApi = "✓ Google Cloud API ile çevrildi",
         MyMemoryExhaustedFallback = "({0} tükendi → {1})",
+        TranslationError = "Çeviri hatası: {0}",
+        ApiKeyValid = "API anahtarı geçerli! Google Gemini API çalışıyor.",
+        ApiKeyError = "Hata: {0} - {1}",
+        ApiKeyConnectionError = "Bağlantı hatası: {0}",
+        MyMemoryDailyQuotaExceeded = "MyMemory günlük kotası aşıldı",
+        MyMemoryQuotaWarning = "MyMemory kota uyarısı algılandı",
+        MyMemoryApiError = "MyMemory API hatası: durum {0}",
         
         // TTS messages
         TtsAvailableOnlyInNative = "TTS yalnızca yerel uygulamada kullanılabilir",
         Mp3GeneratedInNative = "MP3 yerel uygulamada oluşturuluyor",
         TtsPlatformNotSupported = "Piper TTS şu anda yalnızca Windows'ta desteklenmektedir",
-        TtsDownloadingPiper = "Piper TTS indiriliyor (~15 MB)...",
-        TtsDownloadingPiperProgress = "Piper TTS indiriliyor... {0}%",
-        TtsExtractingPiper = "Piper açılıyor...",
-        TtsDownloadingVoiceModel = "Almanca ses modeli indiriliyor (~65 MB)...",
-        TtsDownloadingVoiceModelProgress = "Ses modeli indiriliyor... {0}%",
-        TtsDownloadingModelConfig = "Model yapılandırması indiriliyor...",
+        TtsDownloadingPiper = "Piper TTS başlatılıyor...",
+        TtsDownloadingPiperProgress = "Piper TTS başlatılıyor... {0}%",
+        TtsExtractingPiper = "Piper gömülü kaynaklardan çıkarılıyor...",
+        TtsDownloadingVoiceModel = "Almanca ses modeli başlatılıyor...",
+        TtsDownloadingVoiceModelProgress = "Ses modeli çıkarılıyor... {0}%",
+        TtsDownloadingModelConfig = "Model yapılandırması hazırlanıyor...",
         TtsPiperNotFound = "Piper çalıştırılabilir dosyası bulunamadı: {0}",
         TtsReady = "TTS hazır",
         TtsInitError = "TTS başlatma hatası: {0}",
@@ -809,7 +917,24 @@ public class LocalizationManager : INotifyPropertyChanged
         TtsGeneratingAudio = "Metinden ses oluşturuluyor...",
         TtsCouldNotGenerateAudio = "Ses oluşturulamadı",
         TtsConvertingToMp3 = "MP3'e dönüştürülüyor...",
-        TtsSavedAs = "Kaydedildi: {0}"
+        TtsSavedAs = "Kaydedildi: {0}",
+        
+        // User Agreement
+        UserAgreementTitle = "📜 Kullanıcı Sözleşmesi",
+        UserAgreementSubheader = "Kullanım koşulları",
+        UserAgreementPrivacyTitle = "🔒 Veri Gizliliği",
+        UserAgreementPrivacyText = "Bu uygulama sunucularımıza hiçbir veri iletmez. Tüm bilgiler cihazınızda yerel olarak işlenir.",
+        UserAgreementLocalStorageTitle = "💾 Yerel Depolama",
+        UserAgreementLocalStorageText = "Almanca çevirilerin veya metnin okunması ve kaydedilmesi yalnızca cihazınızda yerel olarak gerçekleşir. Verileriniz sizin kontrolünüzde kalır.",
+        UserAgreementProvidersTitle = "🌐 Çeviri Sağlayıcıları",
+        UserAgreementProvidersText = "Çeviri yapmak için uygulama üçüncü taraf hizmetleri kullanır (MyMemory, Gtranslate, Google Gemini API). Bu sağlayıcıların her birinin kendi kullanıcı sözleşmesi ve gizlilik politikası vardır. Koşullarını resmi web sitelerinde incelemenizi öneririz.",
+        UserAgreementResponsibilityTitle = "⚠️ Sorumluluk",
+        UserAgreementResponsibilityText = "Çeviri için girdiğiniz metin doğrudan çeviri sağlayıcılarına gönderilir. Bu hizmetler tarafından yapılan veri işlemeden sorumlu değiliz. Gizli veya kişisel bilgi girmeyin.",
+        UserAgreementConsentTitle = "✅ Onay",
+        UserAgreementConsentText = "Bu uygulamayı kullanarak, bu koşulları ve çeviri sağlayıcılarının koşullarını kabul etmiş olursunuz.",
+        UserAgreement = "Kullanıcı Sözleşmesi",
+        UserAgreementTooltip = "Kullanıcı sözleşmesini görüntüle",
+        UserAgreementAccept = "Anladım"
     };
     #endregion
 }
@@ -847,6 +972,7 @@ public class LocalizedStrings
     public string SpeakUkrainianTooltip { get; init; } = "";
     public string SpeakGermanTooltip { get; init; } = "";
     public string PasteTooltip { get; init; } = "";
+    public string PasteGermanTooltip { get; init; } = "";
     public string CopyTooltip { get; init; } = "";
     public string SaveTextTooltip { get; init; } = "";
     public string SaveMp3Tooltip { get; init; } = "";
@@ -935,6 +1061,13 @@ public class LocalizedStrings
     public string TranslatingViaGoogleApi { get; init; } = "";
     public string TranslatedViaGoogleApi { get; init; } = "";
     public string MyMemoryExhaustedFallback { get; init; } = "";
+    public string TranslationError { get; init; } = "";
+    public string ApiKeyValid { get; init; } = "";
+    public string ApiKeyError { get; init; } = "";
+    public string ApiKeyConnectionError { get; init; } = "";
+    public string MyMemoryDailyQuotaExceeded { get; init; } = "";
+    public string MyMemoryQuotaWarning { get; init; } = "";
+    public string MyMemoryApiError { get; init; } = "";
     
     // TTS messages
     public string TtsAvailableOnlyInNative { get; init; } = "";
@@ -959,4 +1092,21 @@ public class LocalizedStrings
     public string TtsCouldNotGenerateAudio { get; init; } = "";
     public string TtsConvertingToMp3 { get; init; } = "";
     public string TtsSavedAs { get; init; } = "";
+    
+    // User Agreement
+    public string UserAgreementTitle { get; init; } = "";
+    public string UserAgreementSubheader { get; init; } = "";
+    public string UserAgreementPrivacyTitle { get; init; } = "";
+    public string UserAgreementPrivacyText { get; init; } = "";
+    public string UserAgreementLocalStorageTitle { get; init; } = "";
+    public string UserAgreementLocalStorageText { get; init; } = "";
+    public string UserAgreementProvidersTitle { get; init; } = "";
+    public string UserAgreementProvidersText { get; init; } = "";
+    public string UserAgreementResponsibilityTitle { get; init; } = "";
+    public string UserAgreementResponsibilityText { get; init; } = "";
+    public string UserAgreementConsentTitle { get; init; } = "";
+    public string UserAgreementConsentText { get; init; } = "";
+    public string UserAgreement { get; init; } = "";
+    public string UserAgreementTooltip { get; init; } = "";
+    public string UserAgreementAccept { get; init; } = "";
 }

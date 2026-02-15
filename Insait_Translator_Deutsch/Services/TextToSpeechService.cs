@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
-using System.Net.Http;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Insait_Translator_Deutsch.Localization;
@@ -49,22 +49,13 @@ public class TextToSpeechService : IDisposable
 {
     private bool _isInitialized;
     private bool _disposed;
-    private static readonly HttpClient _httpClient = new() { Timeout = TimeSpan.FromMinutes(15) };
-
-    // Piper release URLs
-    private const string PIPER_WINDOWS_URL = "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip";
     
-    // German thorsten voice model (high quality)
-    private const string MODEL_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/high/de_DE-thorsten-high.onnx";
-    private const string MODEL_CONFIG_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/high/de_DE-thorsten-high.onnx.json";
+    // Resource markers for embedded resources
+    // Resources are named like: Insait_Translator_Deutsch.PiperTTS.piper.piper.exe
+    private const string PiperResourceMarker = ".PiperTTS.piper.";
+    private const string ModelsResourceMarker = ".PiperTTS.models.";
 
     public bool IsInitialized => _isInitialized;
-
-    public TextToSpeechService()
-    {
-        // All paths are managed by AppDataPaths for Microsoft Store compatibility
-        // Directories are created lazily when accessed
-    }
 
     public async Task InitializeAsync(Action<string>? statusCallback = null)
     {
@@ -81,89 +72,18 @@ public class TextToSpeechService : IDisposable
                 throw new PlatformNotSupportedException(strings.TtsPlatformNotSupported);
             }
 
-            // Download Piper executable if not exists
+            // Extract Piper executable from embedded resources if not exists
             if (!File.Exists(AppDataPaths.PiperExePath))
             {
-                statusCallback?.Invoke(strings.TtsDownloadingPiper);
-                
-                var zipPath = Path.Combine(AppDataPaths.PiperDirectory, "piper.zip");
-                
-                using var response = await _httpClient.GetAsync(PIPER_WINDOWS_URL, HttpCompletionOption.ResponseHeadersRead);
-                response.EnsureSuccessStatusCode();
-                
-                var totalBytes = response.Content.Headers.ContentLength ?? 0;
-                
-                await using (var contentStream = await response.Content.ReadAsStreamAsync())
-                await using (var fileStream = File.Create(zipPath))
-                {
-                    var buffer = new byte[81920];
-                    long totalRead = 0;
-                    int bytesRead;
-                    
-                    while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
-                    {
-                        await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
-                        totalRead += bytesRead;
-                        
-                        if (totalBytes > 0)
-                        {
-                            var progress = (int)(totalRead * 100 / totalBytes);
-                            statusCallback?.Invoke(string.Format(strings.TtsDownloadingPiperProgress, progress));
-                        }
-                    }
-                }
-
                 statusCallback?.Invoke(strings.TtsExtractingPiper);
-                var extractPath = AppDataPaths.PiperDirectory;
-                if (Directory.Exists(Path.Combine(extractPath, "piper")))
-                {
-                    Directory.Delete(Path.Combine(extractPath, "piper"), true);
-                }
-                ZipFile.ExtractToDirectory(zipPath, extractPath);
-                File.Delete(zipPath);
+                await ExtractEmbeddedPiperResourcesAsync();
             }
 
-            // Download German voice model if not exists
+            // Extract German voice model from embedded resources if not exists
             if (!File.Exists(AppDataPaths.ThorstenModelPath))
             {
                 statusCallback?.Invoke(strings.TtsDownloadingVoiceModel);
-                
-                using var modelResponse = await _httpClient.GetAsync(MODEL_URL, HttpCompletionOption.ResponseHeadersRead);
-                modelResponse.EnsureSuccessStatusCode();
-                
-                var totalBytes = modelResponse.Content.Headers.ContentLength ?? 0;
-                
-                await using (var contentStream = await modelResponse.Content.ReadAsStreamAsync())
-                await using (var fileStream = File.Create(AppDataPaths.ThorstenModelPath))
-                {
-                    var buffer = new byte[81920];
-                    long totalRead = 0;
-                    int bytesRead;
-                    
-                    while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
-                    {
-                        await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
-                        totalRead += bytesRead;
-                        
-                        if (totalBytes > 0)
-                        {
-                            var progress = (int)(totalRead * 100 / totalBytes);
-                            statusCallback?.Invoke(string.Format(strings.TtsDownloadingVoiceModelProgress, progress));
-                        }
-                    }
-                }
-            }
-
-            // Download model config if not exists
-            if (!File.Exists(AppDataPaths.ThorstenModelConfigPath))
-            {
-                statusCallback?.Invoke(strings.TtsDownloadingModelConfig);
-                
-                using var configResponse = await _httpClient.GetAsync(MODEL_CONFIG_URL);
-                configResponse.EnsureSuccessStatusCode();
-                
-                var configContent = await configResponse.Content.ReadAsStringAsync();
-                await File.WriteAllTextAsync(AppDataPaths.ThorstenModelConfigPath, configContent);
+                await ExtractEmbeddedModelResourcesAsync();
             }
 
             // Verify piper executable exists
@@ -184,6 +104,249 @@ public class TextToSpeechService : IDisposable
     }
 
     /// <summary>
+    /// Extract embedded Piper TTS resources to AppData
+    /// </summary>
+    private static async Task ExtractEmbeddedPiperResourcesAsync()
+    {
+        var assembly = FindAssemblyWithResources(PiperResourceMarker);
+        
+        if (assembly == null)
+        {
+            LogAvailableResources();
+            throw new FileNotFoundException("PiperTTS embedded resources not found in any loaded assembly");
+        }
+        
+        System.Diagnostics.Debug.WriteLine($"[TTS] Found PiperTTS in: {assembly.GetName().Name}");
+        
+        var resourceNames = assembly.GetManifestResourceNames();
+        var extractedCount = 0;
+        
+        foreach (var resourceName in resourceNames)
+        {
+            if (!resourceName.Contains(PiperResourceMarker)) continue;
+            
+            // Get the part after the marker: e.g., "piper.exe" or "espeak_ng_data.de_dict"
+            var markerIndex = resourceName.IndexOf(PiperResourceMarker, StringComparison.Ordinal);
+            if (markerIndex < 0) continue;
+            
+            var relativePart = resourceName.Substring(markerIndex + PiperResourceMarker.Length);
+            var relativePath = ConvertResourceNameToPath(relativePart);
+            var outputPath = Path.Combine(AppDataPaths.PiperDirectory, relativePath);
+            
+            // Ensure directory exists
+            var directory = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            
+            // Extract file
+            await using var resourceStream = assembly.GetManifestResourceStream(resourceName);
+            if (resourceStream != null)
+            {
+                await using var fileStream = File.Create(outputPath);
+                await resourceStream.CopyToAsync(fileStream);
+                extractedCount++;
+            }
+        }
+        
+        System.Diagnostics.Debug.WriteLine($"[TTS] Extracted {extractedCount} Piper files");
+        
+        if (extractedCount == 0)
+        {
+            throw new FileNotFoundException("No PiperTTS resources found to extract");
+        }
+    }
+
+    /// <summary>
+    /// Extract embedded voice model resources to AppData
+    /// </summary>
+    private static async Task ExtractEmbeddedModelResourcesAsync()
+    {
+        var assembly = FindAssemblyWithResources(ModelsResourceMarker);
+        
+        if (assembly == null)
+        {
+            throw new FileNotFoundException("Model embedded resources not found in any loaded assembly");
+        }
+        
+        System.Diagnostics.Debug.WriteLine($"[TTS] Found models in: {assembly.GetName().Name}");
+        
+        var resourceNames = assembly.GetManifestResourceNames();
+        var extractedCount = 0;
+        
+        foreach (var resourceName in resourceNames)
+        {
+            if (!resourceName.Contains(ModelsResourceMarker)) continue;
+            
+            var markerIndex = resourceName.IndexOf(ModelsResourceMarker, StringComparison.Ordinal);
+            if (markerIndex < 0) continue;
+            
+            // Get filename: e.g., "de_DE_thorsten_high.onnx"
+            var fileName = resourceName.Substring(markerIndex + ModelsResourceMarker.Length);
+            
+            // Fix filename: convert underscores to dashes (except locale part)
+            // de_DE_thorsten_high.onnx -> de_DE-thorsten-high.onnx
+            fileName = FixModelFileName(fileName);
+            
+            var outputPath = Path.Combine(AppDataPaths.ModelsDirectory, fileName);
+            
+            // Ensure directory exists
+            var directory = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            
+            // Extract file
+            await using var resourceStream = assembly.GetManifestResourceStream(resourceName);
+            if (resourceStream != null)
+            {
+                await using var fileStream = File.Create(outputPath);
+                await resourceStream.CopyToAsync(fileStream);
+                extractedCount++;
+            }
+        }
+        
+        System.Diagnostics.Debug.WriteLine($"[TTS] Extracted {extractedCount} model files");
+        
+        if (extractedCount == 0)
+        {
+            throw new FileNotFoundException("No model resources found to extract");
+        }
+    }
+    
+    /// <summary>
+    /// Find assembly containing resources with specified marker
+    /// </summary>
+    private static Assembly? FindAssemblyWithResources(string marker)
+    {
+        // First try this library assembly
+        var currentAssembly = typeof(TextToSpeechService).Assembly;
+        if (HasResourcesWithMarker(currentAssembly, marker))
+            return currentAssembly;
+        
+        // Try entry assembly
+        var entryAssembly = Assembly.GetEntryAssembly();
+        if (entryAssembly != null && HasResourcesWithMarker(entryAssembly, marker))
+            return entryAssembly;
+        
+        // Search all loaded assemblies
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            try
+            {
+                if (HasResourcesWithMarker(assembly, marker))
+                    return assembly;
+            }
+            catch { /* Skip */ }
+        }
+        
+        return null;
+    }
+    
+    private static bool HasResourcesWithMarker(Assembly assembly, string marker)
+    {
+        try
+        {
+            return assembly.GetManifestResourceNames().Any(r => r.Contains(marker));
+        }
+        catch { return false; }
+    }
+    
+    private static void LogAvailableResources()
+    {
+        System.Diagnostics.Debug.WriteLine("[TTS] ERROR: No PiperTTS resources found!");
+        System.Diagnostics.Debug.WriteLine("[TTS] Checking loaded assemblies:");
+        
+        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            try
+            {
+                var names = asm.GetManifestResourceNames();
+                var piperNames = names.Where(n => n.Contains("Piper", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (piperNames.Count > 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"  {asm.GetName().Name}: {piperNames.Count} Piper resources");
+                    foreach (var name in piperNames.Take(5))
+                        System.Diagnostics.Debug.WriteLine($"    - {name}");
+                }
+            }
+            catch { /* Skip */ }
+        }
+    }
+    
+    /// <summary>
+    /// Convert resource name to file path
+    /// Example: "piper.exe" -> "piper.exe"
+    /// Example: "espeak_ng_data.de_dict" -> "espeak-ng-data\de_dict"
+    /// </summary>
+    private static string ConvertResourceNameToPath(string resourcePart)
+    {
+        // Known file extensions
+        string[] extensions = { ".exe", ".dll", ".onnx", ".json", ".ort" };
+        
+        // Check for .onnx.json first (compound extension)
+        if (resourcePart.EndsWith(".onnx.json", StringComparison.OrdinalIgnoreCase))
+        {
+            var pathPart = resourcePart[..^".onnx.json".Length];
+            return ConvertDotsToPath(pathPart) + ".onnx.json";
+        }
+        
+        // Check known extensions
+        foreach (var ext in extensions)
+        {
+            if (resourcePart.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+            {
+                var pathPart = resourcePart[..^ext.Length];
+                return ConvertDotsToPath(pathPart) + ext;
+            }
+        }
+        
+        // No known extension - treat as directory/file without extension
+        return ConvertDotsToPath(resourcePart);
+    }
+    
+    /// <summary>
+    /// Convert dots to path separators, handling special cases like espeak-ng-data
+    /// </summary>
+    private static string ConvertDotsToPath(string part)
+    {
+        // Replace underscores that should be dashes (espeak_ng_data -> espeak-ng-data)
+        // But keep locale underscores (de_dict stays de_dict)
+        
+        // First, handle known folder names
+        part = part.Replace("espeak_ng_data", "espeak-ng-data");
+        
+        // Now replace dots with path separators
+        return part.Replace('.', Path.DirectorySeparatorChar);
+    }
+    
+    /// <summary>
+    /// Fix model filename: convert underscores to dashes except locale
+    /// de_DE_thorsten_high.onnx -> de_DE-thorsten-high.onnx
+    /// </summary>
+    private static string FixModelFileName(string fileName)
+    {
+        // Find extension
+        var extIndex = fileName.IndexOf(".onnx", StringComparison.OrdinalIgnoreCase);
+        if (extIndex < 0) return fileName;
+        
+        var namePart = fileName[..extIndex];
+        var extPart = fileName[extIndex..];
+        
+        // Split by underscore
+        var parts = namePart.Split('_');
+        if (parts.Length >= 3)
+        {
+            // Keep first two with underscore (de_DE), join rest with dashes
+            return $"{parts[0]}_{parts[1]}-{string.Join("-", parts.Skip(2))}{extPart}";
+        }
+        
+        return fileName;
+    }
+
+    /// <summary>
     /// Synthesize text to WAV audio bytes
     /// </summary>
     public async Task<byte[]> SynthesizeToWavAsync(string text)
@@ -191,9 +354,7 @@ public class TextToSpeechService : IDisposable
         var strings = LocalizationManager.Instance.Strings;
         
         if (!_isInitialized)
-        {
             throw new InvalidOperationException(strings.TtsNotInitialized);
-        }
 
         if (string.IsNullOrWhiteSpace(text))
             return Array.Empty<byte>();
@@ -214,15 +375,12 @@ public class TextToSpeechService : IDisposable
                 WorkingDirectory = Path.GetDirectoryName(AppDataPaths.PiperExePath)
             };
 
-            using var process = new Process();
-            process.StartInfo = startInfo;
+            using var process = new Process { StartInfo = startInfo };
             process.Start();
 
-            // Send text to Piper via stdin
             await process.StandardInput.WriteLineAsync(text);
             process.StandardInput.Close();
 
-            // Wait for process with timeout
             var completed = await Task.Run(() => process.WaitForExit(60000));
             
             if (!completed)
@@ -237,21 +395,16 @@ public class TextToSpeechService : IDisposable
                 throw new Exception($"Piper error (code {process.ExitCode}): {error}");
             }
 
-            // Read generated audio
             if (!File.Exists(outputPath))
-            {
                 throw new FileNotFoundException(strings.TtsAudioFileNotCreated);
-            }
             
-            var audioData = await File.ReadAllBytesAsync(outputPath);
-            return audioData;
+            return await File.ReadAllBytesAsync(outputPath);
         }
         finally
         {
-            // Cleanup temp file
             if (File.Exists(outputPath))
             {
-                try { File.Delete(outputPath); } catch { /* ignore cleanup errors */ }
+                try { File.Delete(outputPath); } catch { /* ignore */ }
             }
         }
     }
@@ -262,9 +415,7 @@ public class TextToSpeechService : IDisposable
     public async Task SpeakAsync(string text, Action<string>? statusCallback = null)
     {
         if (!_isInitialized)
-        {
             await InitializeAsync(statusCallback);
-        }
 
         if (string.IsNullOrWhiteSpace(text))
             return;
@@ -282,7 +433,6 @@ public class TextToSpeechService : IDisposable
 
         statusCallback?.Invoke(strings.TtsPlaying);
 
-        // Play WAV audio using NAudio
         using var ms = new MemoryStream(audioData);
         using var reader = new WaveFileReader(ms);
         using var outputDevice = new WaveOutEvent();
@@ -291,9 +441,7 @@ public class TextToSpeechService : IDisposable
         outputDevice.Play();
         
         while (outputDevice.PlaybackState == PlaybackState.Playing)
-        {
             await Task.Delay(100);
-        }
 
         statusCallback?.Invoke(strings.Ready);
     }
@@ -304,9 +452,7 @@ public class TextToSpeechService : IDisposable
     public async Task SaveToMp3Async(string text, string filePath, Action<string>? statusCallback = null)
     {
         if (!_isInitialized)
-        {
             await InitializeAsync(statusCallback);
-        }
 
         var strings = LocalizationManager.Instance.Strings;
 
@@ -315,7 +461,6 @@ public class TextToSpeechService : IDisposable
 
         statusCallback?.Invoke(strings.TtsGeneratingAudio);
 
-        // Generate WAV from text using Piper
         var audioData = await SynthesizeToWavAsync(text);
         
         if (audioData.Length == 0)
@@ -323,11 +468,9 @@ public class TextToSpeechService : IDisposable
 
         statusCallback?.Invoke(strings.TtsConvertingToMp3);
 
-        // Convert WAV to MP3 using LAME
         using var wavStream = new MemoryStream(audioData);
         using var reader = new WaveFileReader(wavStream);
         
-        // Create MP3 file
         await using var mp3Writer = new LameMP3FileWriter(filePath, reader.WaveFormat, LAMEPreset.STANDARD);
         
         var buffer = new byte[reader.WaveFormat.AverageBytesPerSecond];

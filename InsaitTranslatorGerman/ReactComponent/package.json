@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:4200": "cross-env INSAIT_UI_PORT=4200 INSAIT_UI_HOST=127.0.0.1 vite",
     "dev:5173": "cross-env INSAIT_UI_PORT=5173 INSAIT_UI_HOST=127.0.0.1 vite",
+    "dev:network": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },

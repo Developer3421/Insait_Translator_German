@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -6,9 +6,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 using GTranslate.Translators;
-using Insait_Translator_Deutsch.Localization;
+using InsaitTranslatorGerman.Localization;
 
-namespace Insait_Translator_Deutsch.Services;
+namespace InsaitTranslatorGerman.Services;
 
 /// <summary>
 /// Translation provider types

@@ -17,7 +17,7 @@ namespace Insait_Translator_Deutsch.Desktop.NativeBackend;
 /// </summary>
 public sealed class NativeBackendHost : IAsyncDisposable
 {
-    private readonly HttpListener _listener = new();
+    private HttpListener _listener = new();
     private readonly TranslationService _translation = new();
     private readonly TextToSpeechService _tts = new();
     private readonly Uri? _uiProxyBaseAddress;
@@ -25,13 +25,14 @@ public sealed class NativeBackendHost : IAsyncDisposable
     private CancellationTokenSource? _cts;
     private Task? _loop;
     private bool _ttsInitialized;
+    private readonly string _originalPrefix;
 
     public Uri BaseAddress { get; private set; }
 
-    public NativeBackendHost(string urlPrefix = "http://127.0.0.1:5050/", string? uiProxyBaseUrl = null)
+    public NativeBackendHost(string urlPrefix = "http://0.0.0.0:5050/", string? uiProxyBaseUrl = null)
     {
         BaseAddress = new Uri(urlPrefix);
-        _listener.Prefixes.Add(urlPrefix);
+        _originalPrefix = urlPrefix;
 
         if (!string.IsNullOrWhiteSpace(uiProxyBaseUrl))
         {
@@ -52,42 +53,63 @@ public sealed class NativeBackendHost : IAsyncDisposable
         _cts = new CancellationTokenSource();
 
         string startedPrefix;
-        try
+        
+        // Спробуємо кілька варіантів URL (спочатку localhost)
+        var urlsToTry = new[]
         {
-            _listener.Start();
-            startedPrefix = BaseAddress.ToString();
-        }
-        catch (HttpListenerException ex)
+            _originalPrefix.Replace("0.0.0.0", "127.0.0.1"), // localhost IP (найбільш надійний)
+            _originalPrefix.Replace("0.0.0.0", "localhost"),  // localhost hostname
+            _originalPrefix,                                   // оригінальний (0.0.0.0)
+            _originalPrefix.Replace("0.0.0.0", "+"),          // + означає всі інтерфейси з HTTP.sys
+            _originalPrefix.Replace("0.0.0.0", "*")           // * також працює для всіх інтерфейсів
+        };
+        
+        Exception? lastException = null;
+        
+        foreach (var urlToTry in urlsToTry)
         {
-            // Якщо 127.0.0.1 не працює, спробуємо localhost
-            System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Failed to start on {BaseAddress}: {ex.Message}");
-            Console.WriteLine($"[NativeBackendHost] Failed to start on {BaseAddress}: {ex.Message}");
+            try
+            {
+                // Створюємо новий HttpListener для кожної спроби
+                _listener = new HttpListener();
+                _listener.Prefixes.Add(urlToTry);
+                _listener.Start();
+                
+                BaseAddress = new Uri(urlToTry);
+                startedPrefix = urlToTry;
+                
+                System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Successfully started on {startedPrefix}");
+                Console.WriteLine($"[NativeBackendHost] Successfully started on {startedPrefix}");
+                
+                _loop = Task.Run(() => AcceptLoopAsync(_cts.Token));
 
-            // Спробуємо альтернативний URL
-            var altUrl = BaseAddress.ToString().Replace("127.0.0.1", "localhost");
-            System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Trying alternative: {altUrl}");
-
-            _listener.Prefixes.Clear();
-            _listener.Prefixes.Add(altUrl);
-            _listener.Start();
-
-            BaseAddress = new Uri(altUrl);
-            startedPrefix = altUrl;
+                // Log embedded resources for debugging
+                var assembly = Assembly.GetExecutingAssembly();
+                var resources = assembly.GetManifestResourceNames();
+                System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Found {resources.Length} embedded resources:");
+                foreach (var res in resources)
+                {
+                    System.Diagnostics.Debug.WriteLine($"  - {res}");
+                }
+                
+                return;
+            }
+            catch (HttpListenerException ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Failed to start on {urlToTry}: {ex.Message}");
+                Console.WriteLine($"[NativeBackendHost] Failed to start on {urlToTry}: {ex.Message}");
+                lastException = ex;
+                
+                try { _listener.Close(); } catch { }
+            }
         }
-
-        _loop = Task.Run(() => AcceptLoopAsync(_cts.Token));
-
-        System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Started on {startedPrefix}");
-        Console.WriteLine($"[NativeBackendHost] Started on {startedPrefix}");
-
-        // Log embedded resources for debugging
-        var assembly = Assembly.GetExecutingAssembly();
-        var resources = assembly.GetManifestResourceNames();
-        System.Diagnostics.Debug.WriteLine($"[NativeBackendHost] Found {resources.Length} embedded resources:");
-        foreach (var res in resources)
-        {
-            System.Diagnostics.Debug.WriteLine($"  - {res}");
-        }
+        
+        // Якщо жоден URL не спрацював, кидаємо виняток
+        throw new InvalidOperationException(
+            $"Failed to start HTTP listener. Tried: {string.Join(", ", urlsToTry)}. " +
+            $"Last error: {lastException?.Message}. " +
+            "To enable network access, run as Administrator or use Setup-NetworkAccess.ps1",
+            lastException);
     }
 
     private async Task AcceptLoopAsync(CancellationToken ct)

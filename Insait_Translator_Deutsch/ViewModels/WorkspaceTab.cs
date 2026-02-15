@@ -1,11 +1,9 @@
-using ReactiveUI;
-
 namespace Insait_Translator_Deutsch.ViewModels;
 
 /// <summary>
 /// Browser-like workspace tab (max 3). Each workspace has its own state (text fields + selected inner tab).
 /// </summary>
-public class WorkspaceTab : ReactiveObject
+public class WorkspaceTab : ViewModelBase
 {
     private string _title = "Workspace";
     private MainTab _selectedTab = MainTab.Translate;
@@ -17,25 +15,24 @@ public class WorkspaceTab : ReactiveObject
     public string Title
     {
         get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
+        set => SetProperty(ref _title, value);
     }
 
     public MainTab SelectedTab
     {
         get => _selectedTab;
-        set => this.RaiseAndSetIfChanged(ref _selectedTab, value);
+        set => SetProperty(ref _selectedTab, value);
     }
 
     public string UkrainianText
     {
         get => _ukrainianText;
-        set => this.RaiseAndSetIfChanged(ref _ukrainianText, value);
+        set => SetProperty(ref _ukrainianText, value);
     }
 
     public string GermanText
     {
         get => _germanText;
-        set => this.RaiseAndSetIfChanged(ref _germanText, value);
+        set => SetProperty(ref _germanText, value);
     }
 }
-

@@ -6,9 +6,19 @@ export interface HealthResponse {
   ok: boolean;
 }
 
-// В режимі розробки Vite проксіює /api/* до бекенду на 5050.
-// В продакшені (embedded) всі запити йдуть на той самий хост.
-const baseUrl = '';
+// UI сервер на порті 4200, API бекенд на порті 4201
+// Визначаємо базовий URL для API
+const getApiBaseUrl = (): string => {
+  // В продакшені (статичний C# сервер) - API на 4201
+  // В режимі розробки (Vite) - проксі через той самий хост
+  if (window.location.port === '4200') {
+    return 'http://127.0.0.1:4201';
+  }
+  // Vite dev server або інший порт - використовуємо проксі
+  return '';
+};
+
+const baseUrl = getApiBaseUrl();
 
 /**
  * Check if the native backend is available

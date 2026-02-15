@@ -24,6 +24,7 @@ interface LocalizedStrings {
   
   // Buttons
   paste: string;
+  pasteGerman: string;
   listen: string;
   copy: string;
   downloadMp3: string;
@@ -57,7 +58,7 @@ interface LocalizedStrings {
 
 const translations: Record<UILanguage, LocalizedStrings> = {
   uk: {
-    appTitle: 'Insait Перекладач → Deutsch',
+    appTitle: 'Insait Перекладач → German',
     connected: '● Підключено',
     disconnected: '○ Відключено',
     
@@ -71,6 +72,7 @@ const translations: Record<UILanguage, LocalizedStrings> = {
     translationPlaceholder: 'Переклад німецькою з\'явиться тут...',
     
     paste: 'Вставити з буфера',
+    pasteGerman: 'Вставити текст для озвучення',
     listen: 'Прослухати',
     copy: 'Копіювати',
     downloadMp3: 'Завантажити MP3',
@@ -100,7 +102,7 @@ const translations: Record<UILanguage, LocalizedStrings> = {
     error: 'Помилка',
   },
   en: {
-    appTitle: 'Insait Translator → Deutsch',
+    appTitle: 'Insait Translator → German',
     connected: '● Connected',
     disconnected: '○ Disconnected',
     
@@ -114,6 +116,7 @@ const translations: Record<UILanguage, LocalizedStrings> = {
     translationPlaceholder: 'German translation will appear here...',
     
     paste: 'Paste from clipboard',
+    pasteGerman: 'Paste text to listen',
     listen: 'Listen',
     copy: 'Copy',
     downloadMp3: 'Download MP3',
@@ -157,6 +160,7 @@ const translations: Record<UILanguage, LocalizedStrings> = {
     translationPlaceholder: 'Die deutsche Übersetzung wird hier angezeigt...',
     
     paste: 'Aus Zwischenablage einfügen',
+    pasteGerman: 'Text zum Anhören einfügen',
     listen: 'Anhören',
     copy: 'Kopieren',
     downloadMp3: 'MP3 herunterladen',
@@ -186,7 +190,7 @@ const translations: Record<UILanguage, LocalizedStrings> = {
     error: 'Fehler',
   },
   ru: {
-    appTitle: 'Insait Переводчик → Deutsch',
+    appTitle: 'Insait Переводчик → German',
     connected: '● Подключено',
     disconnected: '○ Отключено',
     
@@ -200,6 +204,7 @@ const translations: Record<UILanguage, LocalizedStrings> = {
     translationPlaceholder: 'Перевод на немецкий появится здесь...',
     
     paste: 'Вставить из буфера',
+    pasteGerman: 'Вставить текст для озвучивания',
     listen: 'Прослушать',
     copy: 'Копировать',
     downloadMp3: 'Скачать MP3',
@@ -229,7 +234,7 @@ const translations: Record<UILanguage, LocalizedStrings> = {
     error: 'Ошибка',
   },
   tr: {
-    appTitle: 'Insait Çevirmen → Deutsch',
+    appTitle: 'Insait Çevirmen → German',
     connected: '● Bağlı',
     disconnected: '○ Bağlantı kesildi',
     
@@ -243,6 +248,7 @@ const translations: Record<UILanguage, LocalizedStrings> = {
     translationPlaceholder: 'Almanca çeviri burada görünecek...',
     
     paste: 'Panodan yapıştır',
+    pasteGerman: 'Dinlemek için metin yapıştır',
     listen: 'Dinle',
     copy: 'Kopyala',
     downloadMp3: 'MP3 indir',
@@ -290,7 +296,7 @@ function App() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isBackendAvailable, setIsBackendAvailable] = useState(false);
-  const [uiLanguage, setUILanguage] = useState<UILanguage>('uk');
+  const [uiLanguage, setUILanguage] = useState<UILanguage>('en');
   const [showUILanguageMenu, setShowUILanguageMenu] = useState(false);
 
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -474,6 +480,16 @@ function App() {
     }
   };
 
+  const handlePasteGerman = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setGermanText(text);
+      setStatusText(t.pastedFromClipboard);
+    } catch {
+      setStatusText(t.pasteError);
+    }
+  };
+
   const handleDownloadMp3 = async () => {
     const text = germanText.trim();
     if (!text) {
@@ -599,15 +615,22 @@ function App() {
         {/* German Output */}
         <div className="panel output-panel">
           <div className="panel-header">
-            <span className="panel-title">Deutsch</span>
+            <span className="panel-title">German</span>
           </div>
           <textarea
             className="text-area"
             value={germanText}
+            onChange={(e) => setGermanText(e.target.value)}
             placeholder={t.translationPlaceholder}
-            readOnly
           />
           <div className="panel-actions">
+            <button
+              className="btn icon-btn"
+              onClick={handlePasteGerman}
+              title={t.pasteGerman}
+            >
+              📋
+            </button>
             <button
               className="btn icon-btn"
               onClick={handleSpeakGerman}
@@ -622,7 +645,7 @@ function App() {
               disabled={!germanText}
               title={t.copy}
             >
-              📋
+              📄
             </button>
             <button
               className="btn icon-btn"

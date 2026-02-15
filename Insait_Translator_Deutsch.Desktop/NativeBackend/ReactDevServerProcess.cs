@@ -54,7 +54,7 @@ internal sealed class ReactDevServerProcess : IAsyncDisposable
         
         // Set environment variables for Vite
         psi.Environment["INSAIT_UI_PORT"] = _port.ToString();
-        psi.Environment["INSAIT_UI_HOST"] = "127.0.0.1";
+        psi.Environment["INSAIT_UI_HOST"] = "127.0.0.1";  // localhost only
         psi.Environment["INSAIT_BACKEND_URL"] = _backendUrl;
 
         _process = new Process { StartInfo = psi, EnableRaisingEvents = true };
