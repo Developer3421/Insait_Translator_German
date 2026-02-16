@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -16,9 +15,9 @@ namespace InsaitTranslatorGerman.Services;
 public enum TranslationProvider
 {
     Auto,       // MyMemory -> GTranslate fallback
-    MyMemory,   // Free API with limits
-    GTranslate, // Google Translate (unofficial)
-    GoogleApi   // Google Cloud Translation API (requires key)
+    MyMemory,   // Online provider
+    GTranslate, // Google Translate via GTranslate library (unofficial)
+    GoogleApi   // Google Gemini API (requires key)
 }
 
 /// <summary>
@@ -96,7 +95,7 @@ public class TranslationService : IDisposable
             {
                 _myMemoryExhausted = true;
                 _myMemoryExhaustedTime = DateTime.Now;
-                var message = string.Format(LocalizationManager.Instance.Strings.MyMemoryExhaustedFallback, "MyMemory", "Google Translate");
+                var message = string.Format(LocalizationManager.Instance.Strings.MyMemoryExhaustedFallback, "MyMemory", "GTranslate");
                 ProviderChanged?.Invoke(this, message);
             }
             catch (Exception)
@@ -114,7 +113,7 @@ public class TranslationService : IDisposable
             {
                 Text = result,
                 UsedProvider = TranslationProvider.GTranslate,
-                ProviderName = "Google Translate",
+                ProviderName = "GTranslate",
                 WasFallback = true
             };
         }
@@ -349,7 +348,7 @@ public class TranslationService : IDisposable
 
     public void Dispose()
     {
-        _httpClient?.Dispose();
+        _httpClient.Dispose();
     }
 }
 

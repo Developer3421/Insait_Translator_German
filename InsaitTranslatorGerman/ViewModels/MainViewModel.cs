@@ -426,7 +426,7 @@ public class MainViewModel : ViewModelBase, IDisposable
     }
 
     /// <summary>
-    /// Translates text specifically using Google Cloud Translation API
+    /// Translates text specifically using Google Gemini API
     /// </summary>
     public async Task TranslateWithGoogleApiAsync()
     {
@@ -457,7 +457,7 @@ public class MainViewModel : ViewModelBase, IDisposable
             {
                 var result = await _translationService.TranslateWithDetailsAsync(UkrainianText);
                 GermanText = result.Text;
-                CurrentProviderName = "Google Cloud API";
+                CurrentProviderName = "Google Gemini API";
                 StatusText = strings.TranslatedViaGoogleApi;
             }
             finally
@@ -467,7 +467,7 @@ public class MainViewModel : ViewModelBase, IDisposable
         }
         catch (Exception ex)
         {
-            StatusText = $"Google API Error: {ex.Message}";
+            StatusText = $"Gemini API Error: {ex.Message}";
         }
         finally
         {
