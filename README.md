@@ -1,6 +1,6 @@
 # Insait Translator: German
 
-A privacy-first Windows desktop translator focused on translating **any language to German**, with optional German Text-to-Speech.
+A privacy-first Windows desktop translator focused on translating **any language to German**, with optional German Text-to-Speech and an optional local Web UI.
 
 ## Overview
 Insait Translator: German is a Windows desktop app built with Avalonia. It translates text using online providers (with automatic fallback) and stores your workspaces/settings locally.
@@ -8,7 +8,7 @@ Insait Translator: German is a Windows desktop app built with Avalonia. It trans
 The app **does not send your texts or settings to the developer’s servers**. Network requests are made **only** to the translation provider(s) you choose to use.
 
 ## Features
-- Translate **any language: German**
+- Translate **any language → German**
 - Provider system with fallback:
   - **MyMemory** (free API with limits)
   - Fallback to **Google Translate** via **GTranslate**
@@ -17,6 +17,9 @@ The app **does not send your texts or settings to the developer’s servers**. N
 - German Text-to-Speech (TTS) via **Piper**
   - Playback
   - MP3 export
+- Optional local Web UI (React)
+  - React UI served locally (no Node.js required at runtime when using the built `dist/`)
+  - Local loopback backend for the UI (`/api/translate`, `/api/speak-mp3`, `/api/health`)
 
 ## Tech stack
 - **.NET 10** + **Avalonia 11**
@@ -32,15 +35,22 @@ The app **does not send your texts or settings to the developer’s servers**. N
 - Sensitive settings (e.g., API key) are encrypted at rest.
 - Your text is sent over the network only when you use an online translation provider.
 
-See: `PRIVACY_POLICY.md`
+
+The output goes to `ReactComponent/dist` and can be served locally by the desktop app.
+
+## Local endpoints (Web UI bridge)
+When enabled/used, the desktop app exposes a lightweight local HTTP backend on loopback:
+- `GET /api/health`
+- `POST /api/translate`
+- `POST /api/speak-mp3`
 
 ## Project structure
 - `Views/`, `ViewModels/` — Avalonia UI (MVVM)
 - `Services/TranslationService.cs` — translation providers + fallback
 - `Services/SettingsService.cs` — encrypted local settings
 - `Services/WorkspaceDatabaseService.cs` — workspace persistence
-- `Services/NativeBackend/` — local backend services (if used by the app)
-- `ReactComponent/` — optional React UI (source included in repo)
+- `Services/NativeBackend/` — local backend for the React UI
+- `ReactComponent/` — React/Vite UI
 - `PiperTTS/` — bundled Piper runtime and voice model(s)
 
 ## License / usage
