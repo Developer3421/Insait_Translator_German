@@ -52,7 +52,8 @@ When enabled/used, the desktop app exposes a lightweight local HTTP backend on l
 - `Services/NativeBackend/` — local backend for the React UI
 - `ReactComponent/` — React/Vite UI
 - `PiperTTS/` — bundled Piper runtime and voice model(s)
-
+## Download 
+- Microsoft Store: https://apps.microsoft.com/detail/9PH8XTJ8BCJ7 
 ## License / usage
 This repository uses a **split license** approach:
 
